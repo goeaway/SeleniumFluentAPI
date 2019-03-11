@@ -9,12 +9,11 @@ namespace SeleniumFluentAPI.Utilities
 {
     public class WebDriverFactory : IWebDriverFactory
     {
-        public WebDriverFactory(RunLocation runLocation, Browser browser)
+        public WebDriverFactory(Browser browser)
         {
-
+            _browser = browser;
         }
 
-        private readonly RunLocation _location;
         private readonly Browser _browser;
 
         public IWebDriver CreateWebDriver()
