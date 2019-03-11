@@ -92,7 +92,7 @@ Then use this domain to start off a test script:
 
 ```
 var domain = new ExampleDomain();
-var execution = domain.Start(3, TimeSpan.FromSeconds(2))
+var execution = domain.Start(3, TimeSpan.FromSeconds(2));
 ```
 
 The API also utilises the Polly resilience library to retry page element interactions, in the above snippet, we add the retry count and retry wait period in the `Start` method to define how many times Polly should retry page interactions if they throw `WebDriverException` and how long to wait between those retries.
