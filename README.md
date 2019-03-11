@@ -95,7 +95,7 @@ var domain = new ExampleDomain();
 var execution = domain.Start(3, TimeSpan.FromSeconds(2))
 ```
 
-The API also utilises the Polly resilience library to retry page element interactions, in the above snippet, we add the retry count and rety wait period in the `Start` method to define how many times Polly should retry page interactions if they throw `WebDriverException` and how long to wait between those retries.
+The API also utilises the Polly resilience library to retry page element interactions, in the above snippet, we add the retry count and retry wait period in the `Start` method to define how many times Polly should retry page interactions if they throw `WebDriverException` and how long to wait between those retries.
 
 the `Start` method will also add an `IExecution` to navigate to the domain's default page, which we defined with the `DefaultPage` attribute earlier.
 
