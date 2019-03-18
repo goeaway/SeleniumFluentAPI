@@ -100,13 +100,6 @@ public class ExampleDomain : Domain
 }
 ```
 
-Then use this domain to start off a test script:
-
-```
-var domain = new ExampleDomain();
-var execution = domain.Start(3, TimeSpan.FromSeconds(2));
-```
-
 ### Usage
 
 Now instantiate your domain and use the `Execution.New()` to create a new `Execution` in a unit test:
@@ -128,3 +121,31 @@ Then add more `IExecution`, `IAssertion` and `IWait` components to test aspects 
 |`IExecution`| Main actor for the API, exposes many abilities such as clicking an element, typing in an input, navigating to a page or moving the mouse. Just about everything a real user might do. Also allows you to set execution options such as retry counts |
 |`IAssertion`| Use these to make sure your site is doing what it should be, test element visibility and availability, browser location and cookie values |
 |`IWait`| Exposes abilities to wait for elements to be visible or hidden, enabled or disabled, also allows for just waiting for a period of time |
+
+Once a test script has been defined execute it by providing an `IWebDriverFactory`. Use the resulting collection of `ExcecutionResult` to assert if the test was a success.
+
+```
+var domain = new ExampleDomain();
+
+var execution = Execution
+    .New()
+    .ExceptionOnAssertionFailure(false)
+    .RetryCount(3, TimeSpan.FromSeconds(2))
+    .Access(domain)
+    .Expect
+        .ToBeOn(domain.LoginPage)
+    .Then
+    .Click(domain.LoginPage.LoginButton)
+    .Expect
+        .Not.ToBeOn(domain.LoginPage)
+
+// use the basic built in factory or create your own if more customisation is required
+var factory = new WebDriverFactory(Browser.Chrome);
+// use this return result to assert if this test was a success
+var result = execution.Execute(factory);
+```
+
+### Extend
+
+Build your own execution components to streamline your testing experience. Create extension methods for any of the three main types (`IExecution`, `IAssertion` or `IWait`) to provide reusable implementations of common domain specific actions, such as site login or accessing certain domain areas.
+
