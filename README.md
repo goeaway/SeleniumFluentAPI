@@ -15,7 +15,7 @@ public void Example()
     var execution = Execution
             // create a new execution
         .New()
-            // set that failed assertions should not throw an exception
+            // set that failed assertions should not throw an exception (default is true)
         .ExceptionOnAssertionFailure(false)
             // set the amount of times an execution or assertion retries if a WebDriverException is thrown
             // and the time span to wait between each try
