@@ -102,7 +102,7 @@ public class ExampleDomain : Domain
 
 ### Usage
 
-Now instantiate your domain and use the `Execution.New()` to create a new `Execution` in a unit test:
+Now instantiate your domain and use the `Execution.New()` to create a new `Execution` in a unit test, then access the domain via it's default page using the `Access` method:
 
 ```
 [TestMethod]
@@ -110,7 +110,9 @@ public void Example()
 {
     var domain = new ExampleDomain();
 
-    var execution = Execution.New();
+    var execution = Execution
+        .New()
+        .Access(domain);
 }
 ```
 
