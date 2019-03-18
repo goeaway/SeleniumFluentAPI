@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SeleniumFluentAPI.Abstractions;
 
 namespace SeleniumFluentAPI.Executions
 {
     public class ExecutionResult
     {
         public bool Success { get; private set; }
-        public string CurrentUrl { get; private set; }
-        public string CurrentAction { get; private set; }
+        public IExecutionContext Context { get; set; }
         public string Message { get; private set; }
         public Exception InnerException { get; private set; }
 
         public ExecutionResult(bool success, string currentUrl, string currentAction)
         {
             Success = success;
-            CurrentUrl = currentUrl;
-            CurrentAction = currentAction;
+            Context = ExecutionContext.GetContext(currentUrl, currentAction);
         }
 
         public ExecutionResult(bool success, string currentUrl, string currentAction, string message)
         {
             Success = success;
-            CurrentUrl = currentUrl;
-            CurrentAction = currentAction;
+            Context = ExecutionContext.GetContext(currentUrl, currentAction);
             Message = message;
         }
 
@@ -31,8 +29,7 @@ namespace SeleniumFluentAPI.Executions
         {
             InnerException = e;
             Message = e.Message;
-            CurrentUrl = currentUrl;
-            CurrentAction = currentAction;
+            Context = ExecutionContext.GetContext(currentUrl, currentAction);
         }
     }
 }

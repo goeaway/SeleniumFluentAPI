@@ -6,6 +6,12 @@ namespace SeleniumFluentAPI.Exceptions
 {
     public class AssertionFailureException : Exception
     {
+        public AssertionFailureException() : base("Assertion failed") { }
+
         public AssertionFailureException(string message) : base(message) { }
+
+        public AssertionFailureException(string message, Exception innerException) : base(message, innerException) { }
+
+        public AssertionFailureException(Exception innerException) : base("Assertion failed", innerException) { }
     }
 }

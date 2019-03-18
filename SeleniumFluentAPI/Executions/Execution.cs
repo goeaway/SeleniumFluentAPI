@@ -1,35 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using Polly;
 using SeleniumFluentAPI.Abstractions;
+using SeleniumFluentAPI.Attributes;
+using SeleniumFluentAPI.Domains;
+using SeleniumFluentAPI.Exceptions;
 using SeleniumFluentAPI.Utilities;
 
 namespace SeleniumFluentAPI.Executions
 {
-    public class Execution : IExecutable
+    public class Execution : IExecution
     {
         private readonly List<Func<ExecutionResult>> _actions;
-        private readonly int _actionRetries;
-        private readonly TimeSpan _actionRetryWaitPeriod;
+        private int _actionRetries;
+        private TimeSpan _actionRetryWaitPeriod;
         private IWebDriver _driver;
+        private bool _throwOnAssertionFailure;
 
-        public Execution(int actionRetries, TimeSpan actionRetryWaitPeriod)
+        public Execution()
         {
-            if(actionRetries < 0)
-                throw new ArgumentOutOfRangeException(nameof(actionRetries));
-
-            if(actionRetryWaitPeriod == null)
-                throw new ArgumentNullException(nameof(actionRetryWaitPeriod));
-
-            _actionRetries = actionRetries;
-            _actionRetryWaitPeriod = actionRetryWaitPeriod;
+            _actionRetryWaitPeriod = TimeSpan.MinValue;
             _actions = new List<Func<ExecutionResult>>();
+            _throwOnAssertionFailure = true;
         }
 
-        public IAssertion Expect => new Assertion(this, _driver, _actionRetries, _actionRetryWaitPeriod);
+        public IAssertion Expect => new Assertion(this, _driver, _actionRetries, _actionRetryWaitPeriod, _throwOnAssertionFailure);
         public IWait Wait => new Wait(this, _driver);
 
         private IWebElement GetElement(By by)
@@ -46,82 +45,107 @@ namespace SeleniumFluentAPI.Executions
             return element;
         }
 
-        public IExecutable Click(By by)
+        public IExecution Click(By by)
         {
             _actions.Add(() =>
             {
-                    var element = GetElement(by);
+                var element = GetElement(by);
 
-                    if (element == null)
-                        return new ExecutionResult(false, _driver.Url, "Click", "element could not be found");
+                if (element == null)
+                    return new ExecutionResult(false, _driver.Url, "Click", "element could not be found");
 
-                    if (!element.Displayed)
-                        return new ExecutionResult(false, _driver.Url, "Click", "element was not visible");
+                if (!element.Displayed)
+                    return new ExecutionResult(false, _driver.Url, "Click", "element was not visible");
 
-                    if (!element.Enabled)
-                        return new ExecutionResult(false, _driver.Url, "Click", "element was disabled");
+                if (!element.Enabled)
+                    return new ExecutionResult(false, _driver.Url, "Click", "element was disabled");
 
-                    element.Click();
+                element.Click();
 
-                    return new ExecutionResult(true, _driver.Url, "Click", $"click on element");
-            });
-
-            return this;
-        }
-        
-        public IExecutable Input(By by, string textToInput)
-        {
-            _actions.Add(() =>
-            {
-                    var element = GetElement(by);   
-
-                    if(element == null)
-                        return new ExecutionResult(false, _driver.Url, "Input", "element could not be found");
-
-                    if (!element.Displayed)
-                        return new ExecutionResult(false, _driver.Url, "Input", "element was not visible");
-
-                    if (!element.Enabled)
-                        return new ExecutionResult(false, _driver.Url, "Input", "element was disabled");
-
-                    element.SendKeys(textToInput);
-
-                    return new ExecutionResult(true, _driver.Url, "Input", $"send '{textToInput}' to element");
+                return new ExecutionResult(true, _driver.Url, "Click", $"click on element");
             });
 
             return this;
         }
 
-        public IExecutable NavigateTo(IPage page)
+        public IExecution Input(By by, string textToInput)
         {
             _actions.Add(() =>
             {
-                    try
-                    {
-                        var url = page.FullUri.ToString();
-                        _driver.Url = url;
-                        return new ExecutionResult(true, _driver.Url, "Navigate");
-                    }
-                    catch (Exception e)
-                    {
-                        return new ExecutionResult(e, _driver.Url, "Navigate");
-                    }
+                var element = GetElement(by);
+
+                if (element == null)
+                    return new ExecutionResult(false, _driver.Url, "Input", "element could not be found");
+
+                if (!element.Displayed)
+                    return new ExecutionResult(false, _driver.Url, "Input", "element was not visible");
+
+                if (!element.Enabled)
+                    return new ExecutionResult(false, _driver.Url, "Input", "element was disabled");
+
+                element.SendKeys(textToInput);
+
+                return new ExecutionResult(true, _driver.Url, "Input", $"send '{textToInput}' to element");
             });
 
             return this;
         }
 
-        public IExecutable Add(Func<ExecutionResult> component)
+        public IExecution NavigateTo(IPage page)
         {
             _actions.Add(() =>
             {
-                    return component();
+                try
+                {
+                    var url = page.FullUri.ToString();
+                    _driver.Url = url;
+                    return new ExecutionResult(true, _driver.Url, "Navigate");
+                }
+                catch (Exception e)
+                {
+                    return new ExecutionResult(e, _driver.Url, "Navigate");
+                }
             });
 
             return this;
         }
 
-        public IExecutable Complete()
+        public IExecution Access(IDomain domain)
+        {
+            var pagesWithAttribute =
+                domain.GetType()
+                    .GetProperties()
+                    .Where(p => Attribute.IsDefined(p, typeof(DefaultPageAttribute)) &&
+                                p.PropertyType.IsSubclassOf(typeof(Page)));
+
+            if (pagesWithAttribute.Count() == 0)
+                throw new DefaultPageNotFoundException("Default page could not be found when navigating to domain");
+
+            if (pagesWithAttribute.Count() != 1)
+                throw new MultipleDefaultPagesFoundException("Multiple default pages were found for domain when trying to navigate to it");
+
+            var pageToInst = pagesWithAttribute.First().PropertyType;
+            var ctor = pageToInst.GetConstructor(new Type[] { typeof(IDomain) });
+
+            if (ctor == null)
+                throw new InvalidOperationException();
+
+            var page = (IPage)ctor.Invoke(new object[] { this });
+
+            return NavigateTo(page);
+        }
+
+        public IExecution Add(Func<ExecutionResult> component)
+        {
+            _actions.Add(() =>
+            {
+                return component();
+            });
+
+            return this;
+        }
+
+        public IExecution Complete()
         {
             return this;
         }
@@ -144,14 +168,15 @@ namespace SeleniumFluentAPI.Executions
             return results;
         }
 
-        public IExecutable ScrollTo(By by)
+        public IExecution ScrollTo(By by)
         {
             return MoveMouseTo(by);
         }
 
-        public IExecutable Scroll(int pixels, bool up)
+        public IExecution Scroll(int pixels, bool up)
         {
-            _actions.Add(() => {
+            _actions.Add(() =>
+            {
                 try
                 {
                     var actions = new Actions(_driver);
@@ -172,7 +197,7 @@ namespace SeleniumFluentAPI.Executions
             return this;
         }
 
-        public IExecutable MoveMouseTo(By by)
+        public IExecution MoveMouseTo(By by)
         {
             _actions.Add(() =>
             {
@@ -194,7 +219,7 @@ namespace SeleniumFluentAPI.Executions
             return this;
         }
 
-        public IExecutable MoveMouseTo(int x, int y)
+        public IExecution MoveMouseTo(int x, int y)
         {
             _actions.Add(() =>
             {
@@ -215,7 +240,7 @@ namespace SeleniumFluentAPI.Executions
             return this;
         }
 
-        public IExecutable ClickAndHold(By by)
+        public IExecution ClickAndHold(By by)
         {
             _actions.Add(() =>
             {
@@ -237,7 +262,7 @@ namespace SeleniumFluentAPI.Executions
             return this;
         }
 
-        public IExecutable ReleaseClick()
+        public IExecution ReleaseClick()
         {
             _actions.Add(() =>
             {
@@ -256,6 +281,28 @@ namespace SeleniumFluentAPI.Executions
             });
 
             return this;
+        }
+
+        public IExecution RetryCount(int count, TimeSpan intervalWaitPeriod)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+
+            _actionRetries = count;
+            _actionRetryWaitPeriod = intervalWaitPeriod;
+
+            return this;
+        }
+
+        public IExecution ExceptionOnAssertionFailure(bool throwException)
+        {
+            _throwOnAssertionFailure = throwException;
+            return this;
+        }
+
+        public static Execution New()
+        {
+            return new Execution();
         }
     }
 }

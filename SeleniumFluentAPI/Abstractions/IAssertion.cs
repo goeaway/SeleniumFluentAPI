@@ -22,6 +22,6 @@ namespace SeleniumFluentAPI.Abstractions
         /// Inverts the succeeding assertion
         /// </summary>
         IAssertion Not { get; }
-        IExecutable Then { get; }
+        IExecution Then { get; }
     }
 }

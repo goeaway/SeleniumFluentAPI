@@ -7,7 +7,7 @@ namespace SeleniumFluentAPI.Abstractions
 {
     public interface IWait
     {
-        IExecutable Then { get; }
+        IExecution Then { get; }
         IWait For(TimeSpan timeSpan);
         IWait ForElementToShow(By by, TimeSpan timeout);
         IWait ForElementToHide(By by, TimeSpan timeout);

@@ -11,13 +11,13 @@ namespace SeleniumFluentAPI.Executions
 {
     public class Wait : IWait
     {
-        private readonly IExecutable _executable;
+        private readonly IExecution _execution;
         private readonly IWebDriver _driver;
         private readonly List<Func<ExecutionResult>> _waits;
 
-        public Wait(IExecutable executable, IWebDriver driver)
+        public Wait(IExecution execution, IWebDriver driver)
         {
-            _executable = executable;
+            _execution = execution;
             _driver = driver;
             _waits = new List<Func<ExecutionResult>>();
         }
@@ -145,16 +145,16 @@ namespace SeleniumFluentAPI.Executions
             return this;
         }
 
-        public IExecutable Then
+        public IExecution Then
         {
             get
             {
                 foreach (var wait in _waits)
                 {
-                    _executable.Add(wait);
+                    _execution.Add(wait);
                 }
 
-                return _executable;
+                return _execution;
             }
         }
     }

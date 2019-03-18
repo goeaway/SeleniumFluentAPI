@@ -11,14 +11,15 @@ namespace SeleniumFluentAPI.Executions
 {
     public class Assertion : IAssertion
     {
-        private readonly IExecutable _action;
+        private readonly IExecution _action;
         private readonly int _actionRetryCount;
         private readonly TimeSpan _actionRetryWaitPeriod;
         private readonly List<Func<bool>> _assertions;
         private readonly List<int> _assertionsToBeInverted;
         private readonly IWebDriver _driver;
+        private readonly bool _throwOnFailure;
 
-        public Assertion(IExecutable action, IWebDriver driver, int actionRetryCount, TimeSpan actionRetryWaitPeriod)
+        public Assertion(IExecution action, IWebDriver driver, int actionRetryCount, TimeSpan actionRetryWaitPeriod, bool throwOnFailure)
         {
             if(actionRetryCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(actionRetryCount));
@@ -30,6 +31,7 @@ namespace SeleniumFluentAPI.Executions
             _actionRetryCount = actionRetryCount;
             _actionRetryWaitPeriod = actionRetryWaitPeriod;
             _driver = driver;
+            _throwOnFailure = throwOnFailure;
             _assertions = new List<Func<bool>>();
             _assertionsToBeInverted = new List<int>();
         }
@@ -43,14 +45,22 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(() =>
             {
-                    try
-                    {
-                        return _driver.Url == uri.ToString();
-                    }
-                    catch (Exception)
-                    {
-                        return false;
-                    }
+                try
+                {
+                    var result = _driver.Url == uri.ToString();
+
+                    if(_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if (_throwOnFailure)
+                        throw new AssertionFailureException(e);
+
+                    return false;
+                }
             });
 
             return this;
@@ -60,7 +70,22 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(()=>
             {
-                    return assertion();
+                try
+                {
+                    var result = assertion();
+
+                    if (_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if (_throwOnFailure)
+                        throw new AssertionFailureException(e);
+
+                    return false;
+                }
             });
 
             return this;
@@ -70,8 +95,23 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(() =>
             {
+                try
+                {
                     var element = GetElement(by);
-                    return element == null ? false : element.Displayed;
+                    var result = element == null ? false : element.Displayed;
+                    
+                    if(_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if(_throwOnFailure)
+                        throw new AssertionFailureException(e);
+
+                    return false;
+                }
             });
 
             return this;
@@ -81,8 +121,23 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(() =>
             {
+                try
+                {
                     var element = GetElement(by);
-                    return element == null ? false : element.Enabled;
+                    var result = element == null ? false : element.Enabled;
+
+                    if(_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if(_throwOnFailure) 
+                        throw new AssertionFailureException(e);
+
+                    return false;
+                }
             });
 
             return this;
@@ -92,8 +147,23 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(() =>
             {
+                try
+                {
                     var element = GetElement(by);
-                    return predicate(element);
+                    var result = predicate(element);
+
+                    if (_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if (_throwOnFailure)
+                        throw new AssertionFailureException(e);
+
+                    return false;
+                }
             });
 
             return this;
@@ -103,15 +173,23 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(() =>
             {
-                    try
-                    {
-                        var cookie = _driver.Manage().Cookies.GetCookieNamed(cookieName);
-                        return cookie != null;
-                    }
-                    catch (Exception)
-                    {
-                        return false;
-                    }
+                try
+                {
+                    var cookie = _driver.Manage().Cookies.GetCookieNamed(cookieName);
+                    var result = cookie != null;
+
+                    if (_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if (_throwOnFailure)
+                        throw new AssertionFailureException(e);
+
+                    return false;
+                }
             });
 
             return this;
@@ -121,19 +199,29 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(() =>
             {
-                    try
-                    {
-                        var cookie = _driver.Manage().Cookies.GetCookieNamed(cookieName);
+                try
+                {
+                    var cookie = _driver.Manage().Cookies.GetCookieNamed(cookieName);
 
-                        if (cookie != null)
-                            return predicate(cookie);
+                    var result = false;
 
-                        return false;
-                    }
-                    catch (Exception)
+                    if (cookie != null)
                     {
-                        return false;
+                        result = predicate(cookie);
                     }
+
+                    if (_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if (_throwOnFailure)
+                        throw new AssertionFailureException(e);
+
+                    return false;
+                }
             });
 
             return this;
@@ -143,8 +231,23 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(() =>
             {
-                var element = GetElement(by);
-                return element.GetAttribute("class").Contains(className);
+                try
+                {
+                    var element = GetElement(by);
+                    var result = element.GetAttribute("class").Contains(className);
+
+                    if (_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if (_throwOnFailure)
+                        throw new AssertionFailureException(e);
+
+                    return false;
+                }
             });
 
             return this;
@@ -154,8 +257,23 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(() =>
             {
-                var element = GetElement(by);
-                return !string.IsNullOrWhiteSpace(element.GetAttribute(attribute));
+                try
+                {
+                    var element = GetElement(by);
+                    var result = !string.IsNullOrWhiteSpace(element.GetAttribute(attribute));
+
+                    if (_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if (_throwOnFailure)
+                        throw new AssertionFailureException(e);
+
+                    return false;
+                }
             });
 
             return this;
@@ -165,21 +283,31 @@ namespace SeleniumFluentAPI.Executions
         {
             _assertions.Add(() =>
             {
-                var element = GetElement(by);
-                var attr = element.GetAttribute(attribute);
+                try
+                {
+                    var element = GetElement(by);
+                    var attr = element.GetAttribute(attribute);
 
-                if (!string.IsNullOrWhiteSpace(attr))
+                    var result = !string.IsNullOrWhiteSpace(attr) && attr == value;
+
+                    if (_throwOnFailure && !result)
+                        throw new AssertionFailureException();
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    if (_throwOnFailure)
+                        throw new AssertionFailureException(e);
+
                     return false;
-
-                return attr == value;
+                }
             });
 
             return this;
-
-                
         }
 
-        public IExecutable Then
+        public IExecution Then
         {
             get
             {
