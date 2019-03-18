@@ -52,11 +52,7 @@ public void Example()
 }
 ```
 
-Utilising the DataRow attribute of the MSTest test framework, we can run the same test code for multiple browsers.
-
-Developers can combine `IExecutable`, `IAssertion` and `IWait` components to build a complex website test.
-
-The API is easy to extend, define your own extension methods to create complex, reusable components which perform common tasks on a domain, e.g. logging in or creating a blog post.
+### Setup
 
 Start by creating a class that inherits from the `Domain` abstract class (or directly from the `IDomain` interface). This object should represent a domain you are going to test (this isn't necessarily tied directly to a website domain, but probably will be in most cases).
 
@@ -111,12 +107,24 @@ var domain = new ExampleDomain();
 var execution = domain.Start(3, TimeSpan.FromSeconds(2));
 ```
 
-The API also utilises the Polly resilience library to retry page element interactions, in the above snippet, we add the retry count and retry wait period in the `Start` method to define how many times Polly should retry page interactions if they throw `WebDriverException` and how long to wait between those retries.
+### Usage
 
-the `Start` method will also add an `IExecution` to navigate to the domain's default page, which we defined with the `DefaultPage` attribute earlier.
+Now instantiate your domain and use the `Execution.New()` to create a new `Execution` in a unit test:
 
-Then add more `IExecutable`, `IAssertion` and `IWait` components afterwards to build a script.
+```
+[TestMethod]
+public void Example()
+{
+    var domain = new ExampleDomain();
 
-When ready, call the `execution.Execute` method, passing in a `WebDriverFactory` object to delay creation of the `IWebDriver` Selenium object until the last possible time.
+    var execution = Execution.New();
+}
+```
 
-Use the result from the `Execute` method to make assertions in your test method.
+Then add more `IExecution`, `IAssertion` and `IWait` components to test aspects of your domain. 
+
+| Component | Description |
+|---|---|
+|`IExecution`| Main actor for the API, exposes many abilities such as clicking an element, typing in an input, navigating to a page or moving the mouse. Just about everything a real user might do. Also allows you to set execution options such as retry counts |
+|`IAssertion`| Use these to make sure your site is doing what it should be, test element visibility and availability, browser location and cookie values |
+|`IWait`| Exposes abilities to wait for elements to be visible or hidden, enabled or disabled, also allows for just waiting for a period of time |
