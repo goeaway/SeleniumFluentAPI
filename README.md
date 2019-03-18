@@ -1,4 +1,4 @@
-# SeleniumFluentAPI
+# SeleniumScript
 .NET Standard Selenium Fluent API framework to be used in .NET unit tests
 
 This Fluent API allows developers to test their websites by creating a test script, with site navigation, page interaction and assertions each running one after the other. Define a script without executing it straight away! Execute the script when ready and then 
@@ -99,6 +99,12 @@ public class ExampleDomain : Domain
       public LoginPage LoginPage => new LoginPage(this);
 }
 ```
+
+Add as many `Page` objects to a domain as is required. You can also add `By` objects, which define how the Selenium Web Driver should locate page elements. It's normally best to place `By` objects on specific pages, but if you have elements that are common across a domain, such as navbar links, place those on the `Domain`.
+
+Add sub `Domain` objects to a domain where you see fit, such as specific areas of a site that serve the user a specific experience, such as an admin dashboard back end or an eStore. Defining this structure here provides easy and clear access when defining test scripts.
+
+Aside from setting up these definitions, `Page` and `Domain` don't really need to do much else. Avoid adding test components such as `IExecution`, `IAssertion` or `IWait`, place these in extension method classes for easier access in test scripts. Think of the `Domain` as a structural blueprint of your site.
 
 ### Usage
 
