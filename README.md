@@ -13,23 +13,41 @@ public void Example()
     var domain = new ExampleDomain();
 
     var execution = Execution
+        // create a new execution
         .New()
+        // set that failed assertions should not throw an exception
         .ExceptionOnAssertionFailure(false)
+        // set the amount of times an execution or assertion retries if a WebDriverException is thrown
+        // and the time span to wait between each try
         .RetryCount(3, TimeSpan.FromSeconds(2))
+        // access the domain, navigating to the default page of the domain
         .Access(domain)
+        // start an IAssertion
         .Expect
+            // expect to be on the domain login page
             .ToBeOn(domain.LoginPage)
+            // expect to be able to see the login button
             .ToBeAbleSeeElement(domain.LoginPage.LoginButton)
+            // expect to be able to click the login button
             .ToBeAbleToClickElement(domain.LoginPage.LoginButton)
+        // return to the execution
         .Then
+        // click the login button
         .Click(domain.LoginPage.LoginButton)
+        // start an IWait
         .Wait
+            // wait for the login button to be disabled, with a timeout of 3 seconds
             .ForElementToBeDisabled(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(3))
+            // wait for the login button to hide, with a timeout of 2 seconds
             .ForElementToHide(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(2))
+        // return to the execution
         .Then
+        // navigate to the login page
         .NavigateTo(domain.LoginPage);
 
+    // create a factory the execution can use to create a web driver
     var factory = new WebDriverFactory(Browser.Chrome);
+    // execute the execution, this is where we actuall start the test, use the result to assert things
     var result = execution.Execute(factory);
 }
 ```
