@@ -31,7 +31,7 @@ public void MyTest(Browser browser)
             .ToBeAuthenticated()
         .Then;
 
-    var factory = new WebDriverFactory(RunLocation.Local, browser);
+    var factory = new WebDriverFactory(browser);
     var result = execution.Execute(factory);
 }
 ```
