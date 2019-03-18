@@ -104,7 +104,7 @@ Add as many `Page` objects to a domain as is required. You can also add `By` obj
 
 Add sub `Domain` objects to a domain where you see fit, such as specific areas of a site that serve the user a specific experience, such as an admin dashboard back end or an eStore. Defining this structure here provides easy and clear access when defining test scripts.
 
-Aside from setting up these definitions, `Page` and `Domain` don't really need to do much else. Avoid adding test components such as `IExecution`, `IAssertion` or `IWait`, place these in extension method classes for easier access in test scripts. Think of the `Domain` as a structural blueprint of your site.
+Aside from setting up these definitions, `Page` and `Domain` don't really need to do much else. Avoid adding test components such as `IExecution`, `IAssertion` or `IWait`, instead place these in extension method classes for easier access in test scripts. Think of the `Domain` as a structural blueprint of your site.
 
 ### Usage
 
