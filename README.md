@@ -8,30 +8,28 @@ Write tests like the below:
 
 ```
 [TestMethod]
-[DataRow(Browser.Chrome)]
-[DataRow(Browser.Firefox)]
-[DataRow(Browser.IE)]
-[DataRow(Browser.Edge)]
-public void MyTest(Browser browser)
+public void Example()
 {
     var domain = new ExampleDomain();
-    var execution = domain
-        .Start(3, TimeSpan.FromSeconds(2))
+
+    var execution = Execution
+        .New()
+        .ExceptionOnAssertionFailure(false)
+        .RetryCount(3, TimeSpan.FromSeconds(2))
+        .Access(domain)
         .Expect
             .ToBeOn(domain.LoginPage)
+            .ToBeAbleSeeElement(domain.LoginPage.LoginButton)
+            .ToBeAbleToClickElement(domain.LoginPage.LoginButton)
         .Then
+        .Click(domain.LoginPage.LoginButton)
         .Wait
-            .For(TimeSpan.FromSeconds(2))
+            .ForElementToBeDisabled(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(3))
+            .ForElementToHide(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(2))
         .Then
-        .Login(_login)
-        .Wait
-            .For(TimeSpan.FromSeconds(2))
-        .Then
-        .Expect
-            .ToBeAuthenticated()
-        .Then;
+        .NavigateTo(domain.LoginPage);
 
-    var factory = new WebDriverFactory(browser);
+    var factory = new WebDriverFactory(Browser.Chrome);
     var result = execution.Execute(factory);
 }
 ```
