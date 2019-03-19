@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SeleniumFluentAPI.Abstractions;
 
-namespace SeleniumFluentAPI.Executions
+namespace SeleniumFluentAPI.Components
 {
     public class ExecutionResult
     {

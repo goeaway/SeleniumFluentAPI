@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium;
-using SeleniumFluentAPI.Executions;
+using SeleniumFluentAPI.Components;
 
 namespace SeleniumFluentAPI.Abstractions
 {
@@ -10,24 +10,37 @@ namespace SeleniumFluentAPI.Abstractions
     {
         IExecution RetryCount(int count, TimeSpan intervalWaitPeriod);
         IExecution ExceptionOnAssertionFailure(bool throwException);
+        IExecution ExceptionOnExecutionFailure(bool throwException);
+        IExecution ExceptionOnWaitFailure(bool throwException);
 
         IExecution NavigateTo(IPage page);
+        IExecution NavigateTo(IPage page, string actionName);
         IExecution Access(IDomain domain);
+        IExecution Access(IDomain domain, string actionName);
 
         IExecution Click(By by);
+        IExecution Click(By by, string actionName);
         IExecution Input(By by, string textToInput);
+        IExecution Input(By by, string textToInput, string actionName);
 
         IExecution ScrollTo(By by);
+        IExecution ScrollTo(By by, string actionName);
         IExecution Scroll(int pixels, bool up);
+        IExecution Scroll(int pixels, bool up, string actionName);
         IExecution MoveMouseTo(By by);
+        IExecution MoveMouseTo(By by, string actionName);
         IExecution MoveMouseTo(int x, int y);
+        IExecution MoveMouseTo(int x, int y, string actionName);
         IExecution ClickAndHold(By by);
+        IExecution ClickAndHold(By by, string actionName);
         IExecution ReleaseClick();
+        IExecution ReleaseClick(string actionName);
 
         IAssertion Expect { get; }
         IWait Wait { get; }
 
-        IExecution Add(Func<ExecutionResult> component);
+        IExecution Add(Func<IWebDriver, ExecutionResult> component);
+        IExecution Add(Func<IWebDriver, ExecutionResult> component, string actionName);
         IExecution Complete();
 
         IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory);

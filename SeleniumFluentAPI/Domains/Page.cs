@@ -1,13 +1,5 @@
 ﻿using SeleniumFluentAPI.Abstractions;
-using SeleniumFluentAPI.Executions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.PageObjects;
-using SeleniumFluentAPI.Utilities;
 
 namespace SeleniumFluentAPI.Domains
 {

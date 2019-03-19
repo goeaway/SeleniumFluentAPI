@@ -1,7 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeleniumFluentAPI.Enums;
-using SeleniumFluentAPI.Executions;
+using SeleniumFluentAPI.Components;
 using SeleniumFluentAPI.Utilities;
 
 namespace ExampleTestProjest

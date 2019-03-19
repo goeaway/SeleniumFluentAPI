@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SeleniumFluentAPI.Executions
+namespace SeleniumFluentAPI.Components
 {
     public class ExecutionContext : IExecutionContext
     {
