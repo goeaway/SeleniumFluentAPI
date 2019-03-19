@@ -4,6 +4,7 @@ using SeleniumFluentAPI.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using OpenQA.Selenium.Support.Extensions;
 using SeleniumFluentAPI.Utilities;
 using SeleniumFluentAPI.Exceptions;
 
@@ -228,6 +229,23 @@ namespace SeleniumFluentAPI.Components
                 var attr = element.GetAttribute(attribute);
 
                 return !string.IsNullOrWhiteSpace(attr) && attr == value;
+            }, actionName);
+
+            return this;
+        }
+
+        public IAssertion CurrentPageNetworkEntriesPassThis(Predicate<string> predicate)
+        {
+            return CurrentPageNetworkEntriesPassThis(predicate, "Current Page Network Entries Pass This");
+        }
+
+        public IAssertion CurrentPageNetworkEntriesPassThis(Predicate<string> predicate, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                var timings = driver.ExecuteJavaScript<string>("return window.performance.getEntries();");
+
+                return predicate(timings);
             }, actionName);
 
             return this;

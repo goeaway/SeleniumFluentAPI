@@ -29,6 +29,8 @@ namespace SeleniumFluentAPI.Abstractions
         IAssertion CookieToExist(string cookieName, string actionName);
         IAssertion CookieToPassThis(string cookieName, Predicate<Cookie> predicate);
         IAssertion CookieToPassThis(string cookieName, Predicate<Cookie> predicate, string actionName);
+        IAssertion CurrentPageNetworkEntriesPassThis(Predicate<string> predicate);
+        IAssertion CurrentPageNetworkEntriesPassThis(Predicate<string> predicate, string actionName);
         /// <summary>
         /// Inverts the succeeding assertion
         /// </summary>

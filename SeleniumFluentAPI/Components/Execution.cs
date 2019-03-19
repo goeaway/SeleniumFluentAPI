@@ -198,8 +198,6 @@ namespace SeleniumFluentAPI.Components
             return this;
         }
 
-        
-
         public IExecution ScrollTo(By by, string actionName)
         {
             return MoveMouseTo(by, actionName);
