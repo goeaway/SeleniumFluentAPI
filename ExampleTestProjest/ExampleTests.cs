@@ -31,7 +31,7 @@ namespace ExampleTestProjest
                 .Then
                 .NavigateTo(domain.LoginPage);
 
-            var factory = new WebDriverFactory(Browser.Chrome);
+            var factory = new SimpleWebDriverFactory(Browser.Chrome);
             var result = execution.Execute(factory);
         }
     }
