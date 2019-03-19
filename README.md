@@ -1,4 +1,4 @@
-# SeleniumFluentAPI
+# SeleniumScript
 .NET Standard Selenium Fluent API framework to be used in .NET unit tests
 
 This Fluent API allows developers to test their websites by creating a test script, with site navigation, page interaction and assertions each running one after the other. Define a script without executing it straight away! Execute the script when ready and then 
@@ -8,39 +8,51 @@ Write tests like the below:
 
 ```
 [TestMethod]
-[DataRow(Browser.Chrome)]
-[DataRow(Browser.Firefox)]
-[DataRow(Browser.IE)]
-[DataRow(Browser.Edge)]
-public void MyTest(Browser browser)
+public void Example()
 {
     var domain = new ExampleDomain();
-    var execution = domain
-        .Start(3, TimeSpan.FromSeconds(2))
-        .Expect
-            .ToBeOn(domain.LoginPage)
-        .Then
-        .Wait
-            .For(TimeSpan.FromSeconds(2))
-        .Then
-        .Login(_login)
-        .Wait
-            .For(TimeSpan.FromSeconds(2))
-        .Then
-        .Expect
-            .ToBeAuthenticated()
-        .Then;
 
-    var factory = new WebDriverFactory(browser);
+    var execution = Execution
+            // create a new execution
+        .New()
+            // set that failed assertions should not throw an exception (default is true)
+        .ExceptionOnAssertionFailure(false)
+            // set the amount of times an execution or assertion retries if a WebDriverException is thrown
+            // and the time span to wait between each try
+        .RetryCount(3, TimeSpan.FromSeconds(2))
+            // access the domain, navigating to the default page of the domain
+        .Access(domain)
+            // start an IAssertion
+        .Expect
+                // expect to be on the domain login page
+            .ToBeOn(domain.LoginPage)
+                // expect to be able to see the login button
+            .ToBeAbleSeeElement(domain.LoginPage.LoginButton)
+                // expect to be able to click the login button
+            .ToBeAbleToClickElement(domain.LoginPage.LoginButton)
+            // return to the execution
+        .Then
+            // click the login button
+        .Click(domain.LoginPage.LoginButton)
+            // start an IWait
+        .Wait
+                // wait for the login button to be disabled, with a timeout of 3 seconds
+            .ForElementToBeDisabled(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(3))
+                // wait for the login button to hide, with a timeout of 2 seconds
+            .ForElementToHide(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(2))
+            // return to the execution
+        .Then
+            // navigate to the login page
+        .NavigateTo(domain.LoginPage);
+
+        // create a factory the execution can use to create a web driver
+    var factory = new WebDriverFactory(Browser.Chrome);
+        // execute the execution, this is where we actuall start the test, use the result to assert things
     var result = execution.Execute(factory);
 }
 ```
 
-Utilising the DataRow attribute of the MSTest test framework, we can run the same test code for multiple browsers.
-
-Developers can combine `IExecutable`, `IAssertion` and `IWait` components to build a complex website test.
-
-The API is easy to extend, define your own extension methods to create complex, reusable components which perform common tasks on a domain, e.g. logging in or creating a blog post.
+### Setup
 
 Start by creating a class that inherits from the `Domain` abstract class (or directly from the `IDomain` interface). This object should represent a domain you are going to test (this isn't necessarily tied directly to a website domain, but probably will be in most cases).
 
@@ -88,19 +100,60 @@ public class ExampleDomain : Domain
 }
 ```
 
-Then use this domain to start off a test script:
+Add as many `Page` objects to a domain as is required. You can also add `By` objects, which define how the Selenium Web Driver should locate page elements. It's normally best to place `By` objects on specific pages, but if you have elements that are common across a domain, such as navbar links, place those on the `Domain`.
+
+Add sub `Domain` objects to a domain where you see fit, such as specific areas of a site that serve the user a specific experience, such as an admin dashboard back end or an eStore. Defining this structure here provides easy and clear access when defining test scripts.
+
+Aside from setting up these definitions, `Page` and `Domain` don't really need to do much else. Avoid adding test components such as `IExecution`, `IAssertion` or `IWait`, instead place these in extension method classes for easier access in test scripts. Think of the `Domain` as a structural blueprint of your site.
+
+### Usage
+
+Now instantiate your domain and use the `Execution.New()` to create a new `Execution` in a unit test, then access the domain via it's default page using the `Access` method:
+
+```
+[TestMethod]
+public void Example()
+{
+    var domain = new ExampleDomain();
+
+    var execution = Execution
+        .New()
+        .Access(domain);
+}
+```
+
+Then add more `IExecution`, `IAssertion` and `IWait` components to test aspects of your domain. 
+
+| Component | Description |
+|---|---|
+|`IExecution`| Main actor for the API, exposes many abilities such as clicking an element, typing in an input, navigating to a page or moving the mouse. Just about everything a real user might do. Also allows you to set execution options such as retry counts |
+|`IAssertion`| Use these to make sure your site is doing what it should be, test element visibility and availability, browser location and cookie values |
+|`IWait`| Exposes abilities to wait for elements to be visible or hidden, enabled or disabled, also allows for just waiting for a period of time |
+
+Once a test script has been defined execute it by providing an `IWebDriverFactory`. Use the resulting collection of `ExcecutionResult` to assert if the test was a success.
 
 ```
 var domain = new ExampleDomain();
-var execution = domain.Start(3, TimeSpan.FromSeconds(2));
+
+var execution = Execution
+    .New()
+    .ExceptionOnAssertionFailure(false)
+    .RetryCount(3, TimeSpan.FromSeconds(2))
+    .Access(domain)
+    .Expect
+        .ToBeOn(domain.LoginPage)
+    .Then
+    .Click(domain.LoginPage.LoginButton)
+    .Expect
+        .Not.ToBeOn(domain.LoginPage)
+
+// use the basic built in factory or create your own if more customisation is required
+var factory = new WebDriverFactory(Browser.Chrome);
+// use this return result to assert if this test was a success
+var result = execution.Execute(factory);
 ```
 
-The API also utilises the Polly resilience library to retry page element interactions, in the above snippet, we add the retry count and retry wait period in the `Start` method to define how many times Polly should retry page interactions if they throw `WebDriverException` and how long to wait between those retries.
+### Extend
 
-the `Start` method will also add an `IExecution` to navigate to the domain's default page, which we defined with the `DefaultPage` attribute earlier.
+Build your own execution components to streamline your testing experience. Create extension methods for any of the three main types (`IExecution`, `IAssertion` or `IWait`) to provide reusable implementations of common domain specific actions, such as site login or accessing certain domain areas.
 
-Then add more `IExecutable`, `IAssertion` and `IWait` components afterwards to build a script.
-
-When ready, call the `execution.Execute` method, passing in a `WebDriverFactory` object to delay creation of the `IWebDriver` Selenium object until the last possible time.
-
-Use the result from the `Execute` method to make assertions in your test method.
