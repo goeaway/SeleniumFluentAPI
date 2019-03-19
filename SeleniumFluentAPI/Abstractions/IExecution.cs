@@ -44,5 +44,8 @@ namespace SeleniumFluentAPI.Abstractions
         IExecution Complete();
 
         IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory);
+        IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory, Action<IExecutionContext> onActionStart);
+        IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory, Action<IWebDriver> onExecutionCompletion);
+        IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory, Action<IExecutionContext> onActionStart, Action<IWebDriver> onExecutionCompletion);
     }
 }

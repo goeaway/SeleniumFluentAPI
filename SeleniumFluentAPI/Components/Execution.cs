@@ -198,23 +198,7 @@ namespace SeleniumFluentAPI.Components
             return this;
         }
 
-        public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory)
-        {
-            var results = new List<ExecutionResult>();
-
-            var driver = webDriverFactory.CreateWebDriver();
-
-            foreach (var action in _actions)
-            {
-                var result = action.Action(driver);
-
-                results.Add(result);
-            }
-
-            DriverQuitter.Quit(driver);
-
-            return results;
-        }
+        
 
         public IExecution ScrollTo(By by, string actionName)
         {
@@ -353,6 +337,44 @@ namespace SeleniumFluentAPI.Components
         {
             _throwOnWaitException = throwException;
             return this;
+        }
+
+        public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory)
+        {
+            return Execute(webDriverFactory, context => { }, driver => driver.Quit());
+        }
+
+        public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory,
+            Action<IExecutionContext> onActionStart)
+        {
+            return Execute(webDriverFactory, onActionStart, driver => driver.Quit());
+        }
+
+        public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory, 
+            Action<IWebDriver> onExecutionCompletion)
+        {
+            return Execute(webDriverFactory, context => { }, onExecutionCompletion);
+        }
+
+        public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory,
+            Action<IExecutionContext> onActionStart, Action<IWebDriver> onExecutionCompletion)
+        {
+            var results = new List<ExecutionResult>();
+
+            var driver = webDriverFactory.CreateWebDriver();
+
+            foreach (var action in _actions)
+            {
+                onActionStart(ExecutionContext.GetContext(driver.Url, action.Name));
+
+                var result = action.Action(driver);
+
+                results.Add(result);
+            }
+
+            onExecutionCompletion(driver);
+
+            return results;
         }
 
         public static Execution New()
