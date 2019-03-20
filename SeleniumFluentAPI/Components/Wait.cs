@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using Polly;
 using SeleniumFluentAPI.Abstractions;
 using SeleniumFluentAPI.Exceptions;

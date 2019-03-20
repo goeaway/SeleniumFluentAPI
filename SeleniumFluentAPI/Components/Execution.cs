@@ -339,13 +339,13 @@ namespace SeleniumFluentAPI.Components
 
         public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory)
         {
-            return Execute(webDriverFactory, context => { }, driver => driver.Quit());
+            return Execute(webDriverFactory, context => { }, driver => { });
         }
 
         public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory,
             Action<IExecutionContext> onActionStart)
         {
-            return Execute(webDriverFactory, onActionStart, driver => driver.Quit());
+            return Execute(webDriverFactory, onActionStart, driver => { });
         }
 
         public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory, 
@@ -360,7 +360,7 @@ namespace SeleniumFluentAPI.Components
             var results = new List<ExecutionResult>();
 
             var driver = webDriverFactory.CreateWebDriver();
-
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(3);
             foreach (var action in _actions)
             {
                 onActionStart(ExecutionContext.GetContext(driver.Url, action.Name));
@@ -371,6 +371,7 @@ namespace SeleniumFluentAPI.Components
             }
 
             onExecutionCompletion(driver);
+            DriverQuitter.Quit(driver);
 
             return results;
         }
