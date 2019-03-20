@@ -32,6 +32,7 @@ namespace SeleniumFluentAPI.Components
 
         public IAssertion Expect => new Assertion(this, _actionRetries, _actionRetryWaitPeriod, _throwOnAssertionFailure);
         public IWait Wait => new Wait(this, _actionRetries, _actionRetryWaitPeriod, _throwOnWaitException);
+        public IUtility Utils => new Utility(this);
 
         private void InnerAddWithPolicy(Func<IWebDriver, ExecutionResult> action, string actionName)
         {
@@ -361,6 +362,7 @@ namespace SeleniumFluentAPI.Components
 
             var driver = webDriverFactory.CreateWebDriver();
             driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(3);
+
             foreach (var action in _actions)
             {
                 onActionStart(ExecutionContext.GetContext(driver.Url, action.Name));

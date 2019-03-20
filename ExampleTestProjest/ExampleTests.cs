@@ -29,9 +29,13 @@ namespace ExampleTestProjest
                     .ForElementToBeDisabled(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(3))
                     .ForElementToHide(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(2))
                 .Then
-                .NavigateTo(domain.LoginPage);
+                .NavigateTo(domain.LoginPage)
+                .Utils
+                    .SetWindowMaximised()
+                .Then
+                .Complete();
 
-            var factory = new SimpleWebDriverFactory(Browser.Chrome);
+            var factory = new ManagedWebDriverFactory(Browser.Chrome);
             var result = execution.Execute(factory);
         }
     }
