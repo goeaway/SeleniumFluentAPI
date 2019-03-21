@@ -8,12 +8,14 @@ namespace SeleniumFluentAPI.Abstractions
     public interface IWait
     {
         IExecution Then { get; }
-        IWait For(TimeSpan timeSpan);
-        IWait For(TimeSpan timeSpan, string actionName);
-        IWait ForElementToShow(By by, TimeSpan timeout);
-        IWait ForElementToShow(By by, TimeSpan timeout, string actionName);
-        IWait ForElementToHide(By by, TimeSpan timeout);
-        IWait ForElementToHide(By by, TimeSpan timeout, string actionName);
+        IWait ForElementToExist(By by, TimeSpan timeout);
+        IWait ForElementToExist(By by, TimeSpan timeout, string actionName);
+        IWait ForElementToNotExist(By by, TimeSpan timeout);
+        IWait ForElementToNotExist(By by, TimeSpan timeout, string actionName);
+        IWait ForElementToBeDisplayed(By by, TimeSpan timeout);
+        IWait ForElementToBeDisplayed(By by, TimeSpan timeout, string actionName);
+        IWait ForElementToBeHidden(By by, TimeSpan timeout);
+        IWait ForElementToBeHidden(By by, TimeSpan timeout, string actionName);
         IWait ForElementToBeEnabled(By by, TimeSpan timeout);
         IWait ForElementToBeEnabled(By by, TimeSpan timeout, string actionName);
         IWait ForElementToBeDisabled(By by, TimeSpan timeout);

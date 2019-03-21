@@ -27,7 +27,7 @@ namespace ExampleTestProjest
                 .Click(domain.LoginPage.LoginButton)
                 .Wait
                     .ForElementToBeDisabled(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(3))
-                    .ForElementToHide(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(2))
+                    .ForElementToBeHidden(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(2))
                 .Then
                 .NavigateTo(domain.LoginPage);
 

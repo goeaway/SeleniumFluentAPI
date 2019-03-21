@@ -28,7 +28,7 @@ namespace SeleniumFluentAPI.Components
             _waits = new List<ExecutionAction>();
         }
 
-        private void InnerAddWithPolicy(Func<IWebDriver, ExecutionResult> action, string actionName)
+        private void InnerAddWithPolicy(Func<IWebDriver, bool> action, string actionName)
         {
             _waits.Add(new ExecutionAction(actionName, driver =>
             {
@@ -39,7 +39,15 @@ namespace SeleniumFluentAPI.Components
                         .WaitAndRetry(_retryCount, (tryNum) => _retryWaitPeriod)
                         .Execute(() =>
                         {
-                            return action(driver);
+                            try
+                            {
+                                var result = action(driver);
+                                return new ExecutionResult(result, driver.Url, actionName);
+                            }
+                            catch (WebDriverTimeoutException e)
+                            {
+                                return new ExecutionResult(e, driver.Url, actionName);
+                            }
                         });
                 }
                 catch (Exception e)
@@ -52,58 +60,80 @@ namespace SeleniumFluentAPI.Components
             }));
         }
 
-        public IWait ForElementToShow(By by, TimeSpan timeout)
+        public IWait ForElementToExist(By by, TimeSpan timeout)
         {
-            return ForElementToShow(by, timeout, "For Element To Show");
+            return ForElementToExist(by, timeout, "For Element To Exist");
         }
 
-        public IWait ForElementToShow(By by, TimeSpan timeout, string actionName)
+        public IWait ForElementToExist(By by, TimeSpan timeout, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
-
-                if (element == null || !element.Displayed)
-                    return new ExecutionResult(false, driver.Url, actionName, "element did not show in time");
-
-                return new ExecutionResult(true, driver.Url, actionName, "waited for element to show");
+                var waiter = new WebDriverWait(driver, timeout);
+                var result = waiter.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(by));
+                // if we got here the element exists
+                return true;
             }, actionName);
 
             return this;
         }
 
-        public IWait For(TimeSpan timeSpan)
+        public IWait ForElementToNotExist(By by, TimeSpan timeout)
         {
-            return For(timeSpan, "For");
+            return ForElementToNotExist(by, timeout, "For Element To Exist");
         }
 
-        public IWait For(TimeSpan timeSpan, string actionName)
+        public IWait ForElementToNotExist(By by, TimeSpan timeout, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                // might want to change to better imp
-                Thread.Sleep(timeSpan);
-                return new ExecutionResult(true, driver.Url, actionName);
+                var start = DateTime.Now;
+                IWebElement element = null;
+                do
+                {
+                    try
+                    {
+                        element = driver.FindElement(by);
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        element = null;
+                    }
+                } while (element == null || (DateTime.Now - start) > timeout);
+
+                return element == null;
             }, actionName);
 
             return this;
         }
 
-        public IWait ForElementToHide(By by, TimeSpan timeout)
+        public IWait ForElementToBeDisplayed(By by, TimeSpan timeout)
         {
-            return ForElementToHide(by, timeout, "For Element To Show");
+            return ForElementToBeDisplayed(by, timeout, "For Element To Show");
         }
 
-        public IWait ForElementToHide(By by, TimeSpan timeout, string actionName)
+        public IWait ForElementToBeDisplayed(By by, TimeSpan timeout, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var waiter = new WebDriverWait(driver, timeout);
+                return waiter.Until(d => d.FindElement(by).Displayed);
+            }, actionName);
 
-                if (element == null || element.Displayed)
-                    return new ExecutionResult(false, driver.Url, actionName, "element did not hide in time");
+            return this;
+        }
 
-                return new ExecutionResult(true, driver.Url, actionName);
+        public IWait ForElementToBeHidden(By by, TimeSpan timeout)
+        {
+            return ForElementToBeHidden(by, timeout, "For Element To Show");
+        }
+
+        public IWait ForElementToBeHidden(By by, TimeSpan timeout, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                var waiter = new WebDriverWait(driver, timeout);
+                return waiter.Until(d => !d.FindElement(by).Displayed);
             }, actionName);
 
             return this;
@@ -118,12 +148,8 @@ namespace SeleniumFluentAPI.Components
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
-
-                if (element == null || !element.Enabled)
-                    return new ExecutionResult(false, driver.Url, actionName, "element was not enabled in time");
-
-                return new ExecutionResult(true, driver.Url, actionName, "waited for element to be enabled");
+                var waiter = new WebDriverWait(driver, timeout);
+                return waiter.Until(d => d.FindElement(by).Enabled);
             }, actionName);
 
             return this;
@@ -138,12 +164,8 @@ namespace SeleniumFluentAPI.Components
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
-
-                if (element == null || element.Enabled)
-                    return new ExecutionResult(false, driver.Url, actionName, "element was not disabled in time");
-
-                return new ExecutionResult(true, driver.Url, actionName, "waited for element to hide");
+                var waiter = new WebDriverWait(driver, timeout);
+                return waiter.Until(d => !d.FindElement(by).Enabled);
             }, actionName);
 
             return this;
