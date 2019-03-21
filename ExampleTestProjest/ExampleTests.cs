@@ -31,7 +31,7 @@ namespace ExampleTestProjest
                 .Then
                 .NavigateTo(domain.LoginPage)
                 .Utils
-                    .SetWindowMaximised()
+                    .SetWindowMaximised() 
                 .Then
                 .Complete();
 

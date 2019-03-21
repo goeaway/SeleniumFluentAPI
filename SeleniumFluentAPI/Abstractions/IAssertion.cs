@@ -1,7 +1,9 @@
 ﻿using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SeleniumFluentAPI.Abstractions
 {
@@ -31,6 +33,11 @@ namespace SeleniumFluentAPI.Abstractions
         IAssertion CookieToPassThis(string cookieName, Predicate<Cookie> predicate, string actionName);
         IAssertion CurrentPageNetworkEntriesPassThis(Predicate<string> predicate);
         IAssertion CurrentPageNetworkEntriesPassThis(Predicate<string> predicate, string actionName);
+        IAssertion FileToBeDownloaded(string filename);
+        IAssertion FileToBeDownloaded(string filename, string actionName);
+        IAssertion FileToBeDownloaded(Regex filenamePattern);
+        IAssertion FileToBeDownloaded(Regex filenamePattern, string actionName);
+
         /// <summary>
         /// Inverts the succeeding assertion
         /// </summary>

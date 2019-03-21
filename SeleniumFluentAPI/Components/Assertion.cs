@@ -7,6 +7,8 @@ using System.Text;
 using OpenQA.Selenium.Support.Extensions;
 using SeleniumFluentAPI.Utilities;
 using SeleniumFluentAPI.Exceptions;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace SeleniumFluentAPI.Components
 {
@@ -246,6 +248,36 @@ namespace SeleniumFluentAPI.Components
                 var timings = driver.ExecuteJavaScript<string>("return window.performance.getEntries();");
 
                 return predicate(timings);
+            }, actionName);
+
+            return this;
+        }
+
+        public IAssertion FileToBeDownloaded(string filename)
+        {
+            return FileToBeDownloaded(filename);
+        }
+
+        public IAssertion FileToBeDownloaded(string filename, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                throw new NotImplementedException();
+            }, actionName);
+
+            return this;
+        }
+
+        public IAssertion FileToBeDownloaded(Regex filenamePattern)
+        {
+            return FileToBeDownloaded(filenamePattern);
+        }
+
+        public IAssertion FileToBeDownloaded(Regex filenamePattern, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                throw new NotImplementedException();
             }, actionName);
 
             return this;

@@ -15,6 +15,10 @@ namespace SeleniumFluentAPI.Abstractions
 
         IExecution NavigateTo(IPage page);
         IExecution NavigateTo(IPage page, string actionName);
+        IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters);
+        IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters, string actionName);
+        IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters);
+        IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters, string actionName);
         IExecution Access(IDomain domain);
         IExecution Access(IDomain domain, string actionName);
 

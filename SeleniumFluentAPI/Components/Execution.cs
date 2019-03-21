@@ -110,15 +110,6 @@ namespace SeleniumFluentAPI.Components
             {
                 var element = driver.FindElement(by);
 
-                if (element == null)
-                    return new ExecutionResult(false, driver.Url, actionName, "element could not be found");
-
-                if (!element.Displayed)
-                    return new ExecutionResult(false, driver.Url, actionName, "element was not visible");
-
-                if (!element.Enabled)
-                    return new ExecutionResult(false, driver.Url, actionName, "element was disabled");
-
                 element.SendKeys(textToInput);
 
                 return new ExecutionResult(true, driver.Url, actionName, $"send '{textToInput}' to element");
@@ -132,21 +123,49 @@ namespace SeleniumFluentAPI.Components
             return Input(by, "Input");
         }
 
-        public IExecution NavigateTo(IPage page, string actionName)
+        private IExecution InnerNavigateTo(Uri uri, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var url = page.FullUri.ToString();
-                driver.Url = url;
+                driver.Url = uri.ToString();
                 return new ExecutionResult(true, driver.Url, actionName);
             }, actionName);
 
             return this;
         }
 
+        public IExecution NavigateTo(IPage page, string actionName)
+        {
+            return InnerNavigateTo(page.FullUri, actionName);
+        }
+
         public IExecution NavigateTo(IPage page)
         {
             return NavigateTo(page, "Navigate");
+        }
+
+        public IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters)
+        {
+            return NavigateTo(page, queryStringParameters);
+        }
+
+        public IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters, string actionName)
+        {
+            var queryString = string.Join("&", queryStringParameters.Select(parameter => $"{parameter.Key}={parameter.Value}"));
+            var uri = new Uri(page.FullUri, "?" + queryString);
+            return InnerNavigateTo(uri, actionName);
+        }
+
+        public IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters)
+        {
+            return NavigateTo(page, urlParameters, "Navigate");
+        }
+
+        public IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters, string actionName)
+        {
+            var parameters = string.Join("/", urlParameters);
+            var uri = new Uri(page.FullUri, "/" + parameters);
+            return InnerNavigateTo(uri, actionName);
         }
 
         public IExecution Access(IDomain domain, string actionName)
