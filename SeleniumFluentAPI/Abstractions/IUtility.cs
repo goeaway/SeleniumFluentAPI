@@ -9,5 +9,9 @@ namespace SeleniumFluentAPI.Abstractions
         IExecution Then { get; }
 
         IUtility SetCookie(string cookieName, string value);
+        IUtility SetWindowMaximised();
+        IUtility SetWindowMinimised();
+        IUtility SetWindowDimensions(int width, int height);
+
     }
 }

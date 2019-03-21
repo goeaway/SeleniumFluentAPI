@@ -37,6 +37,7 @@ namespace SeleniumFluentAPI.Abstractions
         IExecution ReleaseClick(string actionName);
 
         IAssertion Expect { get; }
+        IUtility Utils { get; }
         IWait Wait { get; }
 
         IExecution Add(Func<IWebDriver, ExecutionResult> component);

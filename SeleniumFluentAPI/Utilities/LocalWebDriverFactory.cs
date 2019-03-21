@@ -7,9 +7,9 @@ using SeleniumFluentAPI.Enums;
 
 namespace SeleniumFluentAPI.Utilities
 {
-    public class SimpleWebDriverFactory : IWebDriverFactory
+    public class LocalWebDriverFactory : IWebDriverFactory
     {
-        public SimpleWebDriverFactory(Browser browser)
+        public LocalWebDriverFactory(Browser browser)
         {
             _browser = browser;
         }
