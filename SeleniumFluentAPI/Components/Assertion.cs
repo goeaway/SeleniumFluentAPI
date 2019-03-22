@@ -9,6 +9,7 @@ using SeleniumFluentAPI.Utilities;
 using SeleniumFluentAPI.Exceptions;
 using System.IO;
 using System.Text.RegularExpressions;
+using SeleniumFluentAPI.Enums;
 
 namespace SeleniumFluentAPI.Components
 {
@@ -291,14 +292,14 @@ namespace SeleniumFluentAPI.Components
                             if(_throwOnFailure && !result)
                                 throw new AssertionFailureException();
 
-                            return new ExecutionResult(result, driver.Url, assertionAction.Name);
+                            return new ExecutionResult(result, driver.Url, ComponentType.Assertion, assertionAction.Name);
                         }
                         catch (Exception e)
                         {
                             if(_throwOnFailure)
                                 throw new AssertionFailureException(e);
 
-                            return new ExecutionResult(e, driver.Url, assertionAction.Name);
+                            return new ExecutionResult(e, driver.Url, ComponentType.Assertion, assertionAction.Name);
                         }
                     });
                 }

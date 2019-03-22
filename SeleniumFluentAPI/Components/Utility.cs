@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using SeleniumFluentAPI.Abstractions;
+using SeleniumFluentAPI.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -44,7 +45,7 @@ namespace SeleniumFluentAPI.Components
             {
                 driver.Manage().Cookies.AddCookie(new Cookie(cookieName, value));
 
-                return new ExecutionResult(true, driver.Url, "Set Cookie");
+                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Set Cookie");
             }, "Set Cookie");
 
             return this;
@@ -54,7 +55,7 @@ namespace SeleniumFluentAPI.Components
         {
             InnerAdd(driver =>
             {
-                return new ExecutionResult(true, driver.Url, "Maximise");
+                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Maximise");
             }, "Maximise");
 
             return this;
@@ -65,7 +66,7 @@ namespace SeleniumFluentAPI.Components
             InnerAdd(driver =>
             {
                 driver.Manage().Window.Maximize();
-                return new ExecutionResult(true, driver.Url, "Maximise");
+                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Maximise");
             }, "Maximise");
 
             return this;
@@ -76,7 +77,7 @@ namespace SeleniumFluentAPI.Components
             InnerAdd(driver =>
             {
                 driver.Manage().Window.Minimize();
-                return new ExecutionResult(true, driver.Url, "Minimise");
+                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Minimise");
             }, "Minimise");
 
             return this;

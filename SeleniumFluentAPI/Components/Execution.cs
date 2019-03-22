@@ -76,19 +76,9 @@ namespace SeleniumFluentAPI.Components
             InnerAddWithPolicy(driver =>
             {
                 var element = driver.FindElement(by);
-
-                if (element == null)
-                    return new ExecutionResult(false, driver.Url, actionName, "element could not be found");
-
-                if (!element.Displayed)
-                    return new ExecutionResult(false, driver.Url, actionName, "element was not visible");
-
-                if (!element.Enabled)
-                    return new ExecutionResult(false, driver.Url, actionName, "element was disabled");
-
                 element.Click();
 
-                return new ExecutionResult(true, driver.Url, actionName, $"click on element");
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName, $"click on element");
             }, actionName);
 
             return this;
@@ -107,7 +97,7 @@ namespace SeleniumFluentAPI.Components
 
                 element.SendKeys(textToInput);
 
-                return new ExecutionResult(true, driver.Url, actionName, $"send '{textToInput}' to element");
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName, $"send '{textToInput}' to element");
             }, actionName);
 
             return this;
@@ -132,7 +122,7 @@ namespace SeleniumFluentAPI.Components
 
                 select.SelectByIndex(index);
 
-                return new ExecutionResult(true, driver.Url, actionName);
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
             }, actionName);
 
             return this;
@@ -162,7 +152,7 @@ namespace SeleniumFluentAPI.Components
                         throw new NotSupportedException(selectionType.ToString());
                 }
 
-                return new ExecutionResult(true, driver.Url, actionName);
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
             }, actionName);
 
             return this;
@@ -173,7 +163,7 @@ namespace SeleniumFluentAPI.Components
             InnerAddWithPolicy(driver =>
             {
                 driver.Url = uri.ToString();
-                return new ExecutionResult(true, driver.Url, actionName);
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
             }, actionName);
 
             return this;
@@ -284,7 +274,7 @@ namespace SeleniumFluentAPI.Components
                 actions.MoveByOffset(0, offset);
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, actionName);
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
             }, actionName);
 
             return this;
@@ -304,7 +294,7 @@ namespace SeleniumFluentAPI.Components
                 actions.MoveToElement(element);
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, actionName);
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
             }, actionName);
 
             return this;
@@ -323,7 +313,7 @@ namespace SeleniumFluentAPI.Components
                 actions.MoveByOffset(x, y);
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, actionName);
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
             }, actionName);
 
             return this;
@@ -348,7 +338,7 @@ namespace SeleniumFluentAPI.Components
                 actions.ClickAndHold(element);
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, actionName);
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
             }, actionName);
 
             return this;
@@ -367,7 +357,7 @@ namespace SeleniumFluentAPI.Components
                 actions.Release();
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, actionName);
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
             }, actionName);
 
             return this;
@@ -424,7 +414,7 @@ namespace SeleniumFluentAPI.Components
             {
                 foreach (var action in _actions)
                 {
-                    onActionStart(ExecutionContext.GetContext(driver.Url, action.Name));
+                    onActionStart(ExecutionContext.GetContext(driver.Url, ComponentType.Execution, action.Name));
 
                     var result = action.Action(driver);
 

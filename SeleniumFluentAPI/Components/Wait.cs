@@ -6,6 +6,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using Polly;
 using SeleniumFluentAPI.Abstractions;
+using SeleniumFluentAPI.Enums;
 using SeleniumFluentAPI.Exceptions;
 using SeleniumFluentAPI.Utilities;
 
@@ -40,7 +41,7 @@ namespace SeleniumFluentAPI.Components
                         .Execute(() =>
                         {
                             var result = action(driver);
-                            return new ExecutionResult(result, driver.Url, actionName);
+                            return new ExecutionResult(result, driver.Url, ComponentType.Wait, actionName);
                         });
                 }
                 catch (Exception e)
@@ -48,7 +49,7 @@ namespace SeleniumFluentAPI.Components
                     if (_throwOnException)
                         throw new WaitFailureException(e);
 
-                    return new ExecutionResult(e, driver.Url, actionName);
+                    return new ExecutionResult(e, driver.Url, ComponentType.Wait, actionName);
                 }
             }));
         }

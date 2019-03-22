@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using SeleniumFluentAPI.Abstractions;
+using SeleniumFluentAPI.Enums;
 
 namespace SeleniumFluentAPI.Components
 {
@@ -12,24 +13,24 @@ namespace SeleniumFluentAPI.Components
         public string Message { get; private set; }
         public Exception InnerException { get; private set; }
 
-        public ExecutionResult(bool success, string currentUrl, string currentAction)
+        public ExecutionResult(bool success, string currentUrl, ComponentType type, string currentAction)
         {
             Success = success;
-            Context = ExecutionContext.GetContext(currentUrl, currentAction);
+            Context = ExecutionContext.GetContext(currentUrl, type, currentAction);
         }
 
-        public ExecutionResult(bool success, string currentUrl, string currentAction, string message)
+        public ExecutionResult(bool success, string currentUrl, ComponentType type, string currentAction, string message)
         {
             Success = success;
-            Context = ExecutionContext.GetContext(currentUrl, currentAction);
+            Context = ExecutionContext.GetContext(currentUrl, type, currentAction);
             Message = message;
         }
 
-        public ExecutionResult(Exception e, string currentUrl, string currentAction)
+        public ExecutionResult(Exception e, string currentUrl, ComponentType type, string currentAction)
         {
             InnerException = e;
             Message = e.Message;
-            Context = ExecutionContext.GetContext(currentUrl, currentAction);
+            Context = ExecutionContext.GetContext(currentUrl, type, currentAction);
         }
     }
 }
