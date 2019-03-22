@@ -25,7 +25,7 @@ namespace GoogleTests
         {
             if (LOCAL)
             {
-                var factory = new LocalWebDriverFactory(browser)
+                var factory = new ManagedWebDriverFactory(browser)
                     .SetDriverOptions(
                         Browser.Firefox, 
                         new FirefoxOptions

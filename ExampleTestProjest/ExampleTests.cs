@@ -35,7 +35,7 @@ namespace ExampleTestProjest
                 .Then
                 .Complete();
 
-            var factory = new LocalWebDriverFactory(Browser.Chrome);
+            var factory = new ManagedWebDriverFactory(Browser.Chrome);
             var result = execution.Execute(factory);
         }
     }

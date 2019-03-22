@@ -16,14 +16,14 @@ using InternetExplorerOptions = OpenQA.Selenium.IE.InternetExplorerOptions;
 
 namespace SeleniumFluentAPI.Utilities
 {
-    public class LocalWebDriverFactory : IWebDriverFactory
+    public class ManagedWebDriverFactory : IWebDriverFactory
     {
         private readonly Browser _browser;
         private readonly DriverManager _manager;
         private readonly IDictionary<Browser, IDriverConfig> _configs;
         private readonly IDictionary<Browser, DriverOptions> _options; 
 
-        public LocalWebDriverFactory(Browser browser)
+        public ManagedWebDriverFactory(Browser browser)
         {
             _browser = browser;
             _manager = new DriverManager();
@@ -45,7 +45,7 @@ namespace SeleniumFluentAPI.Utilities
             };
         }
 
-        public LocalWebDriverFactory SetConfig(Browser browser, IDriverConfig config)
+        public ManagedWebDriverFactory SetConfig(Browser browser, IDriverConfig config)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace SeleniumFluentAPI.Utilities
             return this;
         }
 
-        public LocalWebDriverFactory SetDriverOptions(Browser browser, DriverOptions options)
+        public ManagedWebDriverFactory SetDriverOptions(Browser browser, DriverOptions options)
         {
             try
             {
