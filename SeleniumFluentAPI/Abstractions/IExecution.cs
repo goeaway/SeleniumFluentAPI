@@ -10,7 +10,6 @@ namespace SeleniumFluentAPI.Abstractions
     {
         IExecution RetryCount(int count, TimeSpan intervalWaitPeriod);
         IExecution ExceptionOnAssertionFailure(bool throwException);
-        IExecution ExceptionOnExecutionFailure(bool throwException);
         IExecution ExceptionOnWaitFailure(bool throwException);
 
         IExecution NavigateTo(IPage page);

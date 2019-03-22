@@ -19,7 +19,6 @@ namespace SeleniumFluentAPI.Components
         private int _actionRetries;
         private TimeSpan _actionRetryWaitPeriod;
         private bool _throwOnAssertionFailure;
-        private bool _throwOnExecutionException;
         private bool _throwOnWaitException;
 
         public Execution()
@@ -27,7 +26,7 @@ namespace SeleniumFluentAPI.Components
             _actionRetryWaitPeriod = TimeSpan.MinValue;
             _actions = new List<ExecutionAction>();
             _throwOnAssertionFailure = true;
-            _throwOnExecutionException = true;
+            _throwOnWaitException = true;
         }
 
         public IAssertion Expect => new Assertion(this, _actionRetries, _actionRetryWaitPeriod, _throwOnAssertionFailure);
@@ -50,10 +49,7 @@ namespace SeleniumFluentAPI.Components
                 }
                 catch (Exception e)
                 {
-                    if(_throwOnExecutionException)
-                        throw new ExecutionFailureException(e);
-
-                    return new ExecutionResult(e, driver.Url, actionName);
+                    throw new ExecutionFailureException(e);
                 }
             }));
         }
@@ -68,10 +64,7 @@ namespace SeleniumFluentAPI.Components
                 }
                 catch (Exception e)
                 {
-                    if (_throwOnExecutionException)
-                        throw new ExecutionFailureException(e);
-
-                    return new ExecutionResult(e, driver.Url, actionName);
+                    throw new ExecutionFailureException(e);
                 }
             }));
         }
@@ -120,7 +113,7 @@ namespace SeleniumFluentAPI.Components
 
         public IExecution Input(By by, string textToInput)
         {
-            return Input(by, "Input");
+            return Input(by, textToInput, "Input");
         }
 
         private IExecution InnerNavigateTo(Uri uri, string actionName)
@@ -188,7 +181,7 @@ namespace SeleniumFluentAPI.Components
             if (ctor == null)
                 throw new InvalidOperationException();
 
-            var page = (IPage)ctor.Invoke(new object[] { this });
+            var page = (IPage)ctor.Invoke(new object[] { domain });
 
             return NavigateTo(page, actionName);
         }
@@ -345,12 +338,6 @@ namespace SeleniumFluentAPI.Components
             return this;
         }
 
-        public IExecution ExceptionOnExecutionFailure(bool throwException)
-        {
-            _throwOnExecutionException = throwException;
-            return this;
-        }
-
         public IExecution ExceptionOnWaitFailure(bool throwException)
         {
             _throwOnWaitException = throwException;
@@ -381,20 +368,29 @@ namespace SeleniumFluentAPI.Components
 
             var driver = webDriverFactory.CreateWebDriver();
             driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(3);
-
-            foreach (var action in _actions)
+            try
             {
-                onActionStart(ExecutionContext.GetContext(driver.Url, action.Name));
+                foreach (var action in _actions)
+                {
+                    onActionStart(ExecutionContext.GetContext(driver.Url, action.Name));
 
-                var result = action.Action(driver);
+                    var result = action.Action(driver);
 
-                results.Add(result);
+                    results.Add(result);
+                }
+
+
+                return results;
             }
-
-            onExecutionCompletion(driver);
-            DriverQuitter.Quit(driver);
-
-            return results;
+            catch (Exception e)
+            {
+                throw;
+            }
+            finally
+            {
+                onExecutionCompletion(driver);
+                DriverQuitter.Quit(driver);
+            }
         }
 
         public static Execution New()

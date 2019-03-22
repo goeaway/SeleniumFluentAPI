@@ -8,6 +8,7 @@ namespace SeleniumFluentAPI.Enums
     {
         Chrome, 
         Firefox,
+        Opera,
         Edge,
         Safari,
         IE

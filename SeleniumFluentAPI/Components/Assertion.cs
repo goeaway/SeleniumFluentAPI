@@ -41,28 +41,13 @@ namespace SeleniumFluentAPI.Components
         {
             _assertions.Add(new AssertionAction(actionName, driver =>
             {
-                try
-                {
-                    var result = Policy
-                        .Handle<WebDriverException>()
-                        .WaitAndRetry(_actionRetryCount, (tryNum) => _actionRetryWaitPeriod)
-                        .Execute(() =>
-                        {
-                            return func(driver);
-                        });
-
-                    if(_throwOnFailure && !result)
-                        throw new AssertionFailureException();
-
-                    return result;
-                }
-                catch (Exception e)
-                {
-                    if (_throwOnFailure)
-                        throw new AssertionFailureException(e);
-
-                    return false;
-                }
+                return Policy
+                    .Handle<WebDriverException>()
+                    .WaitAndRetry(_actionRetryCount, (tryNum) => _actionRetryWaitPeriod)
+                    .Execute(() =>
+                    {
+                        return func(driver);
+                    });
             }));
         }
 
@@ -303,10 +288,16 @@ namespace SeleniumFluentAPI.Components
                             else
                                 result = assertionAction.Action(driver);
 
+                            if(_throwOnFailure && !result)
+                                throw new AssertionFailureException();
+
                             return new ExecutionResult(result, driver.Url, assertionAction.Name);
                         }
                         catch (Exception e)
                         {
+                            if(_throwOnFailure)
+                                throw new AssertionFailureException(e);
+
                             return new ExecutionResult(e, driver.Url, assertionAction.Name);
                         }
                     });

@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeleniumFluentAPI", "SeleniumFluentAPI\SeleniumFluentAPI.csproj", "{AD459C5F-96F6-46DA-B622-46B2B3990E74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleTestProjest", "ExampleTestProjest\ExampleTestProjest.csproj", "{F6F046C5-B524-4C2E-8A55-1A4AC54E5479}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleTestProjest", "ExampleTestProjest\ExampleTestProjest.csproj", "{F6F046C5-B524-4C2E-8A55-1A4AC54E5479}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleTests", "GoogleTests\GoogleTests.csproj", "{5CB7189A-8B1C-4F3D-8D65-864596E89DB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F6F046C5-B524-4C2E-8A55-1A4AC54E5479}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6F046C5-B524-4C2E-8A55-1A4AC54E5479}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6F046C5-B524-4C2E-8A55-1A4AC54E5479}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CB7189A-8B1C-4F3D-8D65-864596E89DB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CB7189A-8B1C-4F3D-8D65-864596E89DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CB7189A-8B1C-4F3D-8D65-864596E89DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CB7189A-8B1C-4F3D-8D65-864596E89DB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

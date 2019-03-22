@@ -39,15 +39,8 @@ namespace SeleniumFluentAPI.Components
                         .WaitAndRetry(_retryCount, (tryNum) => _retryWaitPeriod)
                         .Execute(() =>
                         {
-                            try
-                            {
-                                var result = action(driver);
-                                return new ExecutionResult(result, driver.Url, actionName);
-                            }
-                            catch (WebDriverTimeoutException e)
-                            {
-                                return new ExecutionResult(e, driver.Url, actionName);
-                            }
+                            var result = action(driver);
+                            return new ExecutionResult(result, driver.Url, actionName);
                         });
                 }
                 catch (Exception e)
