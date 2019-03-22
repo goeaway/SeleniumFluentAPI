@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium;
 using SeleniumFluentAPI.Components;
+using SeleniumFluentAPI.Enums;
 
 namespace SeleniumFluentAPI.Abstractions
 {
@@ -25,6 +26,10 @@ namespace SeleniumFluentAPI.Abstractions
         IExecution Click(By by, string actionName);
         IExecution Input(By by, string textToInput);
         IExecution Input(By by, string textToInput, string actionName);
+        IExecution Select(By by, int index);
+        IExecution Select(By by, int index, string actionName);
+        IExecution Select(By by, string value, SelectionType selectionType);
+        IExecution Select(By by, string value, SelectionType selectionType, string actionName);
 
         IExecution ScrollTo(By by);
         IExecution ScrollTo(By by, string actionName);

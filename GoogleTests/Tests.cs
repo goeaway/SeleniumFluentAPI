@@ -54,9 +54,9 @@ namespace GoogleTests
 
         [TestMethod]
         [DataRow(Browser.Chrome)]
-        //[DataRow(Browser.Edge)]
-        //[DataRow(Browser.Firefox)]
-        //[DataRow(Browser.IE)]
+        [DataRow(Browser.Edge)]
+        [DataRow(Browser.Firefox)]
+        [DataRow(Browser.IE)]
         public void CanAccessGoogle(Browser browser)
         {
             var domain = new GoogleDomain();

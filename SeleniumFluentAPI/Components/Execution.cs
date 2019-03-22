@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
 using Polly;
 using SeleniumFluentAPI.Abstractions;
 using SeleniumFluentAPI.Attributes;
 using SeleniumFluentAPI.Domains;
+using SeleniumFluentAPI.Enums;
 using SeleniumFluentAPI.Exceptions;
 using SeleniumFluentAPI.Utilities;
 
@@ -114,6 +116,56 @@ namespace SeleniumFluentAPI.Components
         public IExecution Input(By by, string textToInput)
         {
             return Input(by, textToInput, "Input");
+        }
+
+        public IExecution Select(By by, int index)
+        {
+            return Select(by, index, "Select By Index");
+        }
+
+        public IExecution Select(By by, int index, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                var element = driver.FindElement(by);
+                var select = new SelectElement(element);
+
+                select.SelectByIndex(index);
+
+                return new ExecutionResult(true, driver.Url, actionName);
+            }, actionName);
+
+            return this;
+        }
+
+        public IExecution Select(By by, string value, SelectionType selectionType)
+        {
+            return Select(by, value, selectionType, "Select");
+        }
+
+        public IExecution Select(By by, string value, SelectionType selectionType, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                var element = driver.FindElement(by);
+                var select = new SelectElement(element);
+
+                switch (selectionType)
+                {
+                    case SelectionType.Text:
+                        select.SelectByText(value);
+                        break;
+                    case SelectionType.Value:
+                        select.SelectByValue(value);
+                        break;
+                    default:
+                        throw new NotSupportedException(selectionType.ToString());
+                }
+
+                return new ExecutionResult(true, driver.Url, actionName);
+            }, actionName);
+
+            return this;
         }
 
         private IExecution InnerNavigateTo(Uri uri, string actionName)
@@ -382,7 +434,7 @@ namespace SeleniumFluentAPI.Components
 
                 return results;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }
