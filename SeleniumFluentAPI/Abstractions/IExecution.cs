@@ -13,6 +13,8 @@ namespace SeleniumFluentAPI.Abstractions
         IExecution ExceptionOnAssertionFailure(bool throwException);
         IExecution ExceptionOnWaitFailure(bool throwException);
 
+        IExecution Refresh();
+        IExecution Refresh(string actionName);
         IExecution NavigateTo(IPage page);
         IExecution NavigateTo(IPage page, string actionName);
         IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters);

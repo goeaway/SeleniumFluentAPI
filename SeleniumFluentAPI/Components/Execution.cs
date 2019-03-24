@@ -169,6 +169,22 @@ namespace SeleniumFluentAPI.Components
             return this;
         }
 
+        public IExecution Refresh()
+        {
+            return Refresh("Refresh");
+        }
+
+        public IExecution Refresh(string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                driver.Navigate().Refresh();
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+            }, actionName);
+
+            return this;
+        }
+
         public IExecution NavigateTo(IPage page, string actionName)
         {
             return InnerNavigateTo(page.FullUri, actionName);

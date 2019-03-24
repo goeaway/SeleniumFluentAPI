@@ -3,6 +3,7 @@ using SeleniumFluentAPI.Abstractions;
 using SeleniumFluentAPI.Enums;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace SeleniumFluentAPI.Components
@@ -53,10 +54,16 @@ namespace SeleniumFluentAPI.Components
 
         public IUtility SetWindowDimensions(int width, int height)
         {
+            if (width < 1)
+                throw new ArgumentOutOfRangeException(nameof(width));
+            if (height < 1)
+                throw new ArgumentOutOfRangeException(nameof(height));
+
             InnerAdd(driver =>
             {
-                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Maximise");
-            }, "Maximise");
+                driver.Manage().Window.Size = new Size(width, height);
+                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Set Dimensions");
+            }, "Set Dimensions");
 
             return this;
         }
