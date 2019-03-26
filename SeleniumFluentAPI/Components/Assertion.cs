@@ -140,6 +140,22 @@ namespace SeleniumFluentAPI.Components
             return this;
         }
 
+        public IAssertion ElementsToPassThis(By by, Predicate<IReadOnlyCollection<IWebElement>> predicate)
+        {
+            return ElementsToPassThis(by, predicate, "Elements To Pass This");
+        }
+
+        public IAssertion ElementsToPassThis(By by, Predicate<IReadOnlyCollection<IWebElement>> predicate, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                var elements = driver.FindElements(by);
+                return predicate(elements);
+            }, actionName);
+
+            return this;
+        }
+
         public IAssertion CookieToExist(string cookieName)
         {
             return CookieToExist(cookieName, "Cookie To Exist");

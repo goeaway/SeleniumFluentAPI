@@ -173,6 +173,22 @@ namespace SeleniumFluentAPI.Components
             return this;
         }
 
+        public IExecution Refresh()
+        {
+            return Refresh("Refresh");
+        }
+
+        public IExecution Refresh(string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                driver.Navigate().Refresh();
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+            }, actionName);
+
+            return this;
+        }
+
         public IExecution NavigateTo(IPage page, string actionName)
         {
             return InnerNavigateTo(page.FullUri, actionName);
@@ -307,6 +323,25 @@ namespace SeleniumFluentAPI.Components
         public IExecution MoveMouseTo(By by)
         {
             return MoveMouseTo(by, "Move Mouse To");
+        }
+
+        public IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction)
+        {
+            return MoveMouseTo(by, pixelOffset, direction);
+        }
+
+        public IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                var element = driver.FindElement(by);
+                var actions = new Actions(driver);
+                actions.MoveToElement(element);
+
+                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+            }, actionName);
+
+            return this;
         }
 
         public IExecution MoveMouseTo(int x, int y, string actionName)

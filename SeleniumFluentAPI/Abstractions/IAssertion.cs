@@ -27,6 +27,8 @@ namespace SeleniumFluentAPI.Abstractions
         IAssertion ElementToHaveAttrValue(By by, string attribute, string value, string actionName);
         IAssertion ElementToPassThis(By by, Predicate<IWebElement> predicate);
         IAssertion ElementToPassThis(By by, Predicate<IWebElement> predicate, string actionName);
+        IAssertion ElementsToPassThis(By by, Predicate<IReadOnlyCollection<IWebElement>> predicate);
+        IAssertion ElementsToPassThis(By by, Predicate<IReadOnlyCollection<IWebElement>> predicate, string actionName);
         IAssertion CookieToExist(string cookieName);
         IAssertion CookieToExist(string cookieName, string actionName);
         IAssertion CookieToPassThis(string cookieName, Predicate<Cookie> predicate);

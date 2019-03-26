@@ -13,6 +13,8 @@ namespace SeleniumFluentAPI.Abstractions
         IExecution ExceptionOnAssertionFailure(bool throwException);
         IExecution ExceptionOnWaitFailure(bool throwException);
 
+        IExecution Refresh();
+        IExecution Refresh(string actionName);
         IExecution NavigateTo(IPage page);
         IExecution NavigateTo(IPage page, string actionName);
         IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters);
@@ -37,6 +39,8 @@ namespace SeleniumFluentAPI.Abstractions
         IExecution Scroll(int pixels, bool up, string actionName);
         IExecution MoveMouseTo(By by);
         IExecution MoveMouseTo(By by, string actionName);
+        IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction);
+        IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction, string actionName);
         IExecution MoveMouseTo(int x, int y);
         IExecution MoveMouseTo(int x, int y, string actionName);
         IExecution ClickAndHold(By by);
