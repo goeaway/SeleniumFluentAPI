@@ -62,7 +62,7 @@ namespace SeleniumFluentAPI.Components
             InnerAdd(driver =>
             {
                 driver.Manage().Window.Size = new Size(width, height);
-                return false;
+                return true;
             }, "Set Dimensions");
 
             return this;
