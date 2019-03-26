@@ -183,7 +183,7 @@ namespace SeleniumFluentAPI.Components
             InnerAddWithPolicy(driver =>
             {
                 driver.Navigate().Refresh();
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
@@ -337,8 +337,7 @@ namespace SeleniumFluentAPI.Components
                 var element = driver.FindElement(by);
                 var actions = new Actions(driver);
                 actions.MoveToElement(element);
-
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
