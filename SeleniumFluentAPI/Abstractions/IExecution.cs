@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium;
-using SeleniumFluentAPI.Components;
-using SeleniumFluentAPI.Enums;
+using SeleniumScript.Components;
+using SeleniumScript.Enums;
 
-namespace SeleniumFluentAPI.Abstractions
+namespace SeleniumScript.Abstractions
 {
     public interface IExecution
     {

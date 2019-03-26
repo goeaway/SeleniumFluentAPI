@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SeleniumFluentAPI.Enums;
+using SeleniumScript.Enums;
 
-namespace SeleniumFluentAPI.Abstractions
+namespace SeleniumScript.Abstractions
 {
     public interface IExecutionContext
     {

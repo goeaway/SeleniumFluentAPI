@@ -1,17 +1,17 @@
 ﻿using OpenQA.Selenium;
 using Polly;
-using SeleniumFluentAPI.Abstractions;
+using SeleniumScript.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium.Support.Extensions;
-using SeleniumFluentAPI.Utilities;
-using SeleniumFluentAPI.Exceptions;
+using SeleniumScript.Utilities;
+using SeleniumScript.Exceptions;
 using System.IO;
 using System.Text.RegularExpressions;
-using SeleniumFluentAPI.Enums;
+using SeleniumScript.Enums;
 
-namespace SeleniumFluentAPI.Components
+namespace SeleniumScript.Components
 {
     public class Assertion : IAssertion
     {

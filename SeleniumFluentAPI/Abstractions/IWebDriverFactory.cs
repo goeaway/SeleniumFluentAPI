@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium;
-using SeleniumFluentAPI.Enums;
+using SeleniumScript.Enums;
 
-namespace SeleniumFluentAPI.Abstractions
+namespace SeleniumScript.Abstractions
 {
     public interface IWebDriverFactory
     {

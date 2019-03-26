@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium;
-using SeleniumFluentAPI.Abstractions;
-using SeleniumFluentAPI.Domains;
+using SeleniumScript.Abstractions;
+using SeleniumScript.Domains;
 
 namespace ExampleTestProjest
 {

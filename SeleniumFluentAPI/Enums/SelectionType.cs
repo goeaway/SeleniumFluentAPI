@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SeleniumFluentAPI.Enums
+namespace SeleniumScript.Enums
 {
     public enum SelectionType
     {

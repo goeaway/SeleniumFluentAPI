@@ -1,7 +1,7 @@
 ﻿using System;
-using SeleniumFluentAPI.Abstractions;
+using SeleniumScript.Abstractions;
 
-namespace SeleniumFluentAPI.Domains
+namespace SeleniumScript.Domains
 {
     public class Domain : IDomain
     {

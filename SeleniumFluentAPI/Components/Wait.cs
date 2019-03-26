@@ -5,12 +5,12 @@ using System.Threading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using Polly;
-using SeleniumFluentAPI.Abstractions;
-using SeleniumFluentAPI.Enums;
-using SeleniumFluentAPI.Exceptions;
-using SeleniumFluentAPI.Utilities;
+using SeleniumScript.Abstractions;
+using SeleniumScript.Enums;
+using SeleniumScript.Exceptions;
+using SeleniumScript.Utilities;
 
-namespace SeleniumFluentAPI.Components
+namespace SeleniumScript.Components
 {
     public class Wait : IWait
     {

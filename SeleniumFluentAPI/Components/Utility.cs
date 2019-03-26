@@ -1,12 +1,12 @@
 ﻿using OpenQA.Selenium;
-using SeleniumFluentAPI.Abstractions;
-using SeleniumFluentAPI.Enums;
+using SeleniumScript.Abstractions;
+using SeleniumScript.Enums;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
-namespace SeleniumFluentAPI.Components
+namespace SeleniumScript.Components
 {
     public class Utility : IUtility
     {

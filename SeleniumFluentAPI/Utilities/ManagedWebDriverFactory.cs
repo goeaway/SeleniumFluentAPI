@@ -3,8 +3,8 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
-using SeleniumFluentAPI.Abstractions;
-using SeleniumFluentAPI.Enums;
+using SeleniumScript.Abstractions;
+using SeleniumScript.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +14,7 @@ using WebDriverManager.DriverConfigs;
 using WebDriverManager.DriverConfigs.Impl;
 using InternetExplorerOptions = OpenQA.Selenium.IE.InternetExplorerOptions;
 
-namespace SeleniumFluentAPI.Utilities
+namespace SeleniumScript.Utilities
 {
     public class ManagedWebDriverFactory : IWebDriverFactory
     {

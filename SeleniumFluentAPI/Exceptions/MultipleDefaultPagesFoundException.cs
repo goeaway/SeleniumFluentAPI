@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SeleniumFluentAPI.Exceptions
+namespace SeleniumScript.Exceptions
 {
     public class MultipleDefaultPagesFoundException : SeleniumScriptException
     {

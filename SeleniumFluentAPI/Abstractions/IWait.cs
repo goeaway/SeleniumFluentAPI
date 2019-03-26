@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium;
 
-namespace SeleniumFluentAPI.Abstractions
+namespace SeleniumScript.Abstractions
 {
     public interface IWait
     {

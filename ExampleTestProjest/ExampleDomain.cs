@@ -1,8 +1,8 @@
-﻿using SeleniumFluentAPI.Domains;
+﻿using SeleniumScript.Domains;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SeleniumFluentAPI.Attributes;
+using SeleniumScript.Attributes;
 
 namespace ExampleTestProjest
 {

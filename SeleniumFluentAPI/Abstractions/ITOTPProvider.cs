@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SeleniumFluentAPI.Abstractions
+namespace SeleniumScript.Abstractions
 {
     public interface ITOTPProvider
     {

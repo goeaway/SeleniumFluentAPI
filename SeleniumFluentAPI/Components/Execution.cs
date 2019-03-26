@@ -6,14 +6,14 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using Polly;
-using SeleniumFluentAPI.Abstractions;
-using SeleniumFluentAPI.Attributes;
-using SeleniumFluentAPI.Domains;
-using SeleniumFluentAPI.Enums;
-using SeleniumFluentAPI.Exceptions;
-using SeleniumFluentAPI.Utilities;
+using SeleniumScript.Abstractions;
+using SeleniumScript.Attributes;
+using SeleniumScript.Domains;
+using SeleniumScript.Enums;
+using SeleniumScript.Exceptions;
+using SeleniumScript.Utilities;
 
-namespace SeleniumFluentAPI.Components
+namespace SeleniumScript.Components
 {
     public class Execution : IExecution
     {

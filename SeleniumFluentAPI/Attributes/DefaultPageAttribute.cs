@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SeleniumFluentAPI.Attributes
+namespace SeleniumScript.Attributes
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class DefaultPageAttribute : Attribute

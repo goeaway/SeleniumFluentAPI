@@ -1,8 +1,8 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SeleniumFluentAPI.Enums;
-using SeleniumFluentAPI.Components;
-using SeleniumFluentAPI.Utilities;
+using SeleniumScript.Enums;
+using SeleniumScript.Components;
+using SeleniumScript.Utilities;
 
 namespace ExampleTestProjest
 {

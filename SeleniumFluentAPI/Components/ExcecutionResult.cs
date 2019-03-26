@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SeleniumFluentAPI.Abstractions;
-using SeleniumFluentAPI.Enums;
+using SeleniumScript.Abstractions;
+using SeleniumScript.Enums;
 
-namespace SeleniumFluentAPI.Components
+namespace SeleniumScript.Components
 {
     public class ExecutionResult
     {

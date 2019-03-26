@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium;
 
-namespace SeleniumFluentAPI.Utilities
+namespace SeleniumScript.Utilities
 {
     public static class DriverQuitter
     {

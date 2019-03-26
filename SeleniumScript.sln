@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeleniumFluentAPI", "SeleniumFluentAPI\SeleniumFluentAPI.csproj", "{AD459C5F-96F6-46DA-B622-46B2B3990E74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeleniumScript", "SeleniumFluentAPI\SeleniumScript.csproj", "{AD459C5F-96F6-46DA-B622-46B2B3990E74}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleTestProjest", "ExampleTestProjest\ExampleTestProjest.csproj", "{F6F046C5-B524-4C2E-8A55-1A4AC54E5479}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleTests", "GoogleTests\GoogleTests.csproj", "{5CB7189A-8B1C-4F3D-8D65-864596E89DB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleTests", "GoogleTests\GoogleTests.csproj", "{5CB7189A-8B1C-4F3D-8D65-864596E89DB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

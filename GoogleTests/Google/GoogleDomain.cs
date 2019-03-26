@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using GoogleTests.Google.Pages;
-using SeleniumFluentAPI.Attributes;
-using SeleniumFluentAPI.Domains;
+using SeleniumScript.Attributes;
+using SeleniumScript.Domains;
 
 namespace GoogleTests.Google
 {

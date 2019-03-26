@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using OtpNet;
-using SeleniumFluentAPI.Abstractions;
+using SeleniumScript.Abstractions;
 
-namespace SeleniumFluentAPI.Utilities
+namespace SeleniumScript.Utilities
 {
     public class TOTPProvider : ITOTPProvider
     {

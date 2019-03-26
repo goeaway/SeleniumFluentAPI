@@ -6,10 +6,10 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Opera;
-using SeleniumFluentAPI.Abstractions;
-using SeleniumFluentAPI.Components;
-using SeleniumFluentAPI.Enums;
-using SeleniumFluentAPI.Utilities;
+using SeleniumScript.Abstractions;
+using SeleniumScript.Components;
+using SeleniumScript.Enums;
+using SeleniumScript.Utilities;
 using WebDriverManager.DriverConfigs.Impl;
 
 namespace GoogleTests

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SeleniumFluentAPI\SeleniumFluentAPI.csproj" />
+    <ProjectReference Include="..\SeleniumFluentAPI\SeleniumScript.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
-﻿using SeleniumFluentAPI.Abstractions;
+﻿using SeleniumScript.Abstractions;
 using System;
 
-namespace SeleniumFluentAPI.Domains
+namespace SeleniumScript.Domains
 {
     public abstract class Page : IPage
     {

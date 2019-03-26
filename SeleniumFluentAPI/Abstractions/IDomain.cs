@@ -1,8 +1,8 @@
 ﻿using System;
 using OpenQA.Selenium;
-using SeleniumFluentAPI.Utilities;
+using SeleniumScript.Utilities;
 
-namespace SeleniumFluentAPI.Abstractions
+namespace SeleniumScript.Abstractions
 {
     public interface IDomain
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium;
 
-namespace SeleniumFluentAPI.Components
+namespace SeleniumScript.Components
 {
     internal class UtilityAction : ExecutionActionBase<bool>
     {

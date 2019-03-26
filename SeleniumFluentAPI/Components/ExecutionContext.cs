@@ -1,10 +1,10 @@
-﻿using SeleniumFluentAPI.Abstractions;
+﻿using SeleniumScript.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SeleniumFluentAPI.Enums;
+using SeleniumScript.Enums;
 
-namespace SeleniumFluentAPI.Components
+namespace SeleniumScript.Components
 {
     public class ExecutionContext : IExecutionContext
     {
