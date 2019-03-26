@@ -15,7 +15,7 @@ namespace SeleniumFluentAPI.Components
     public class Wait : IWait
     {
         private readonly IExecution _execution;
-        private readonly List<ExecutionAction> _waits;
+        private readonly List<UtilityAction> _waits;
         private readonly bool _throwOnException;
         private readonly int _retryCount;
         private readonly TimeSpan _retryWaitPeriod;
@@ -26,12 +26,12 @@ namespace SeleniumFluentAPI.Components
             _throwOnException = throwOnException;
             _retryCount = retryCount;
             _retryWaitPeriod = retryWaitPeriod;
-            _waits = new List<ExecutionAction>();
+            _waits = new List<UtilityAction>();
         }
 
         private void InnerAddWithPolicy(Func<IWebDriver, bool> action, string actionName)
         {
-            _waits.Add(new ExecutionAction(actionName, driver =>
+            _waits.Add(new UtilityAction(actionName, driver =>
             {
                 try
                 {
@@ -40,8 +40,7 @@ namespace SeleniumFluentAPI.Components
                         .WaitAndRetry(_retryCount, (tryNum) => _retryWaitPeriod)
                         .Execute(() =>
                         {
-                            var result = action(driver);
-                            return new ExecutionResult(result, driver.Url, ComponentType.Wait, actionName);
+                            return action(driver);
                         });
                 }
                 catch (Exception e)
@@ -49,7 +48,7 @@ namespace SeleniumFluentAPI.Components
                     if (_throwOnException)
                         throw new WaitFailureException(e);
 
-                    return new ExecutionResult(e, driver.Url, ComponentType.Wait, actionName);
+                    return false;
                 }
             }));
         }

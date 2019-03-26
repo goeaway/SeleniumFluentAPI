@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SeleniumFluentAPI.Exceptions
 {
-    public class AssertionFailureException : Exception
+    public class AssertionFailureException : SeleniumScriptException
     {
         public AssertionFailureException() : base("Assertion failed") { }
 

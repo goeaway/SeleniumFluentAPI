@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SeleniumFluentAPI.Exceptions
 {
-    public class WaitFailureException : Exception
+    public class WaitFailureException : SeleniumScriptException
     {
         public WaitFailureException() : base("Wait failed") { }
 

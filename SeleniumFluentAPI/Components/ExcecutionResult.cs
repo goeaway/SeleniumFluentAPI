@@ -13,24 +13,24 @@ namespace SeleniumFluentAPI.Components
         public string Message { get; private set; }
         public Exception InnerException { get; private set; }
 
-        public ExecutionResult(bool success, string currentUrl, ComponentType type, string currentAction)
+        public ExecutionResult(bool success, string currentUrl, string currentAction)
         {
             Success = success;
-            Context = ExecutionContext.GetContext(currentUrl, type, currentAction);
+            Context = ExecutionContext.GetContext(currentUrl, currentAction);
         }
 
-        public ExecutionResult(bool success, string currentUrl, ComponentType type, string currentAction, string message)
+        public ExecutionResult(bool success, string currentUrl, string currentAction, string message)
         {
             Success = success;
-            Context = ExecutionContext.GetContext(currentUrl, type, currentAction);
+            Context = ExecutionContext.GetContext(currentUrl, currentAction);
             Message = message;
         }
 
-        public ExecutionResult(Exception e, string currentUrl, ComponentType type, string currentAction)
+        public ExecutionResult(Exception e, string currentUrl, string currentAction)
         {
             InnerException = e;
             Message = e.Message;
-            Context = ExecutionContext.GetContext(currentUrl, type, currentAction);
+            Context = ExecutionContext.GetContext(currentUrl, currentAction);
         }
     }
 }

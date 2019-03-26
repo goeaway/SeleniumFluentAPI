@@ -16,5 +16,6 @@ namespace GoogleTests.Google.Pages
         public override string RelativeUri => "/";
 
         public By SearchInput => By.Name("q");
+        public By SearchButton => By.Name("btnK");
     }
 }

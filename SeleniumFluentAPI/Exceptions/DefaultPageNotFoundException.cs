@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SeleniumFluentAPI.Exceptions
 {
-    public class DefaultPageNotFoundException : Exception
+    public class DefaultPageNotFoundException : SeleniumScriptException
     {
         public DefaultPageNotFoundException(string message) : base(message) { }
     }

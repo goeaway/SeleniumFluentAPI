@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SeleniumFluentAPI.Exceptions
 {
-    public class ExecutionFailureException : Exception
+    public class ExecutionFailureException : SeleniumScriptException
     {
         public ExecutionFailureException() : base("Execution failed") { }
 

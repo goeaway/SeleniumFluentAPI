@@ -35,19 +35,21 @@ namespace SeleniumFluentAPI.Components
         public IWait Wait => new Wait(this, _actionRetries, _actionRetryWaitPeriod, _throwOnWaitException);
         public IUtility Utils => new Utility(this);
 
-        private void InnerAddWithPolicy(Func<IWebDriver, ExecutionResult> action, string actionName)
+        private void InnerAddWithPolicy(Func<IWebDriver, bool> action, string actionName)
         {
             _actions.Add(new ExecutionAction(actionName, driver =>
             {
                 try
                 {
-                    return Policy
+                    var result = Policy
                         .Handle<WebDriverException>()
                         .WaitAndRetry(_actionRetries, (tryNum) => _actionRetryWaitPeriod)
                         .Execute(() =>
                         {
                             return action(driver);
                         });
+
+                    return new ExecutionResult(result, driver.Url, actionName);
                 }
                 catch (Exception e)
                 {
@@ -56,13 +58,15 @@ namespace SeleniumFluentAPI.Components
             }));
         }
 
-        private void InnerAdd(Func<IWebDriver, ExecutionResult> action, string actionName)
+        private void InnerAdd(Func<IWebDriver, bool> action, string actionName)
         {
             _actions.Add(new ExecutionAction(actionName, driver =>
             {
                 try
                 {
-                    return action(driver);
+                    var result = action(driver);
+
+                    return new ExecutionResult(result, driver.Url, actionName);
                 }
                 catch (Exception e)
                 {
@@ -78,7 +82,7 @@ namespace SeleniumFluentAPI.Components
                 var element = driver.FindElement(by);
                 element.Click();
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName, $"click on element");
+                return true;
             }, actionName);
 
             return this;
@@ -97,7 +101,7 @@ namespace SeleniumFluentAPI.Components
 
                 element.SendKeys(textToInput);
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName, $"send '{textToInput}' to element");
+                return true;
             }, actionName);
 
             return this;
@@ -122,7 +126,7 @@ namespace SeleniumFluentAPI.Components
 
                 select.SelectByIndex(index);
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
@@ -152,7 +156,7 @@ namespace SeleniumFluentAPI.Components
                         throw new NotSupportedException(selectionType.ToString());
                 }
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
@@ -163,7 +167,7 @@ namespace SeleniumFluentAPI.Components
             InnerAddWithPolicy(driver =>
             {
                 driver.Url = uri.ToString();
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
@@ -233,12 +237,12 @@ namespace SeleniumFluentAPI.Components
             return Access(domain, "Access");
         }
 
-        public IExecution Add(Func<IWebDriver, ExecutionResult> component)
+        public IExecution Add(Func<IWebDriver, bool> component)
         {
             return Add(component, "Custom Execution");
         }
 
-        public IExecution Add(Func<IWebDriver, ExecutionResult> component, string actionName)
+        public IExecution Add(Func<IWebDriver, bool> component, string actionName)
         {
             InnerAdd(driver =>
             {
@@ -274,7 +278,7 @@ namespace SeleniumFluentAPI.Components
                 actions.MoveByOffset(0, offset);
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
@@ -294,7 +298,7 @@ namespace SeleniumFluentAPI.Components
                 actions.MoveToElement(element);
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
@@ -313,7 +317,7 @@ namespace SeleniumFluentAPI.Components
                 actions.MoveByOffset(x, y);
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
@@ -338,7 +342,7 @@ namespace SeleniumFluentAPI.Components
                 actions.ClickAndHold(element);
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
@@ -357,7 +361,7 @@ namespace SeleniumFluentAPI.Components
                 actions.Release();
                 actions.Perform();
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Execution, actionName);
+                return true;
             }, actionName);
 
             return this;
@@ -370,7 +374,6 @@ namespace SeleniumFluentAPI.Components
 
             _actionRetries = count;
             _actionRetryWaitPeriod = intervalWaitPeriod;
-
             return this;
         }
 
@@ -409,24 +412,19 @@ namespace SeleniumFluentAPI.Components
             var results = new List<ExecutionResult>();
 
             var driver = webDriverFactory.CreateWebDriver();
-            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(3);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.MinValue;
             try
             {
                 foreach (var action in _actions)
                 {
-                    onActionStart(ExecutionContext.GetContext(driver.Url, ComponentType.Execution, action.Name));
+                    onActionStart(ExecutionContext.GetContext(driver.Url, action.Name));
 
                     var result = action.Action(driver);
 
                     results.Add(result);
                 }
 
-
                 return results;
-            }
-            catch (Exception)
-            {
-                throw;
             }
             finally
             {

@@ -10,7 +10,7 @@ namespace SeleniumFluentAPI.Components
     public class Utility : IUtility
     {
         private readonly IExecution _execution;
-        private readonly IList<ExecutionAction> _actions;
+        private readonly IList<UtilityAction> _actions;
 
         public IExecution Then
         {
@@ -25,9 +25,9 @@ namespace SeleniumFluentAPI.Components
             }
         }
 
-        private void InnerAdd(Func<IWebDriver, ExecutionResult> action, string actionName)
+        private void InnerAdd(Func<IWebDriver, bool> action, string actionName)
         {
-            _actions.Add(new ExecutionAction(actionName, driver =>
+            _actions.Add(new UtilityAction(actionName, driver =>
             {
                 return action(driver);
             }));
@@ -36,7 +36,7 @@ namespace SeleniumFluentAPI.Components
         public Utility(IExecution execution)
         {
             _execution = execution;
-            _actions = new List<ExecutionAction>();
+            _actions = new List<UtilityAction>();
         }
 
         public IUtility SetCookie(string cookieName, string value)
@@ -45,7 +45,7 @@ namespace SeleniumFluentAPI.Components
             {
                 driver.Manage().Cookies.AddCookie(new Cookie(cookieName, value));
 
-                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Set Cookie");
+                return true;
             }, "Set Cookie");
 
             return this;
@@ -55,7 +55,7 @@ namespace SeleniumFluentAPI.Components
         {
             InnerAdd(driver =>
             {
-                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Maximise");
+                return false;
             }, "Maximise");
 
             return this;
@@ -66,7 +66,7 @@ namespace SeleniumFluentAPI.Components
             InnerAdd(driver =>
             {
                 driver.Manage().Window.Maximize();
-                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Maximise");
+                return true;
             }, "Maximise");
 
             return this;
@@ -77,7 +77,7 @@ namespace SeleniumFluentAPI.Components
             InnerAdd(driver =>
             {
                 driver.Manage().Window.Minimize();
-                return new ExecutionResult(true, driver.Url, ComponentType.Utility, "Minimise");
+                return true;
             }, "Minimise");
 
             return this;

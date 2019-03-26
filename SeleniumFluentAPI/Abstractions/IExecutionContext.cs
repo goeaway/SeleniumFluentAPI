@@ -8,7 +8,6 @@ namespace SeleniumFluentAPI.Abstractions
     public interface IExecutionContext
     {
         string CurrentUrl { get; }
-        ComponentType Type { get; }
         string ActionName { get; }
     }
 }

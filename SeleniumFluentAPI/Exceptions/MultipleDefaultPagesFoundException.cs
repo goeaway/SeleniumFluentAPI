@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SeleniumFluentAPI.Exceptions
 {
-    public class MultipleDefaultPagesFoundException : Exception
+    public class MultipleDefaultPagesFoundException : SeleniumScriptException
     {
         public MultipleDefaultPagesFoundException(string message) : base(message) { }
     }

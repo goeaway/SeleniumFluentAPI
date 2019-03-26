@@ -48,8 +48,8 @@ namespace SeleniumFluentAPI.Abstractions
         IUtility Utils { get; }
         IWait Wait { get; }
 
-        IExecution Add(Func<IWebDriver, ExecutionResult> component);
-        IExecution Add(Func<IWebDriver, ExecutionResult> component, string actionName);
+        IExecution Add(Func<IWebDriver, bool> component);
+        IExecution Add(Func<IWebDriver, bool> component, string actionName);
         IExecution Complete();
 
         IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory);

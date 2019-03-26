@@ -25,7 +25,7 @@ namespace GoogleTests
         {
             if (LOCAL)
             {
-                var factory = new ManagedWebDriverFactory(browser)
+                return new ManagedWebDriverFactory(browser)
                     .SetDriverOptions(
                         Browser.Firefox, 
                         new FirefoxOptions
@@ -44,8 +44,6 @@ namespace GoogleTests
                         {
                             BinaryLocation = @"C:\Users\Joe\AppData\Local\Programs\Opera\launcher.exe"
                         });
-
-                return factory;
             }
 
             throw new NotSupportedException();
@@ -55,8 +53,8 @@ namespace GoogleTests
         [TestMethod]
         [DataRow(Browser.Chrome)]
         [DataRow(Browser.Edge)]
-        [DataRow(Browser.Firefox)]
         [DataRow(Browser.IE)]
+        [DataRow(Browser.Firefox)]
         public void CanAccessGoogle(Browser browser)
         {
             var domain = new GoogleDomain();
@@ -68,7 +66,8 @@ namespace GoogleTests
                 .Expect
                     .ToBeOn(domain.HomePage)
                 .Then
-                .Input(domain.HomePage.SearchInput, "my balls");
+                .Input(domain.HomePage.SearchInput, "my balls")
+                .Click(domain.HomePage.SearchButton);
 
             var factory = GetFactory(browser);
             var results = execution.Execute(factory);

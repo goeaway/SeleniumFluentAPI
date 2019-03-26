@@ -18,7 +18,7 @@ namespace SeleniumFluentAPI.Components
         private readonly IExecution _action;
         private readonly int _actionRetryCount;
         private readonly TimeSpan _actionRetryWaitPeriod;
-        private readonly List<AssertionAction> _assertions;
+        private readonly List<UtilityAction> _assertions;
         private readonly List<int> _assertionsToBeInverted;
         private readonly bool _throwOnFailure;
 
@@ -34,13 +34,13 @@ namespace SeleniumFluentAPI.Components
             _actionRetryCount = actionRetryCount;
             _actionRetryWaitPeriod = actionRetryWaitPeriod;
             _throwOnFailure = throwOnFailure;
-            _assertions = new List<AssertionAction>();
+            _assertions = new List<UtilityAction>();
             _assertionsToBeInverted = new List<int>();
         }
 
         private void InnerAddWithPolicy(Func<IWebDriver, bool> func, string actionName)
         {
-            _assertions.Add(new AssertionAction(actionName, driver =>
+            _assertions.Add(new UtilityAction(actionName, driver =>
             {
                 return Policy
                     .Handle<WebDriverException>()
@@ -292,16 +292,16 @@ namespace SeleniumFluentAPI.Components
                             if(_throwOnFailure && !result)
                                 throw new AssertionFailureException();
 
-                            return new ExecutionResult(result, driver.Url, ComponentType.Assertion, assertionAction.Name);
+                            return result;
                         }
                         catch (Exception e)
                         {
                             if(_throwOnFailure)
                                 throw new AssertionFailureException(e);
 
-                            return new ExecutionResult(e, driver.Url, ComponentType.Assertion, assertionAction.Name);
+                            return false;
                         }
-                    });
+                    }, assertionAction.Name);
                 }
 
                 return _action;
