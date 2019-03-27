@@ -494,7 +494,7 @@ namespace SeleniumScript.Components
             var results = new List<ExecutionResult>();
 
             var driver = webDriverFactory.CreateWebDriver();
-            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(2);
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(3);
             try
             {
                 foreach (var action in _actions)
