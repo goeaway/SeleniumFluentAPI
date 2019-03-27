@@ -21,8 +21,6 @@ namespace GoogleTests
         private const bool LOCAL = true;
         private readonly static GoogleDomain domain = new GoogleDomain();
 
-        // set protected mode on all zones in IE > internet options > security tab
-
         private IWebDriverFactory GetFactory(Browser browser)
         {
             if (LOCAL)
@@ -100,10 +98,10 @@ namespace GoogleTests
         }
 
         [TestMethod]
-        [DataRow(Browser.Chrome)]
-        [DataRow(Browser.Firefox)]
+        //[DataRow(Browser.Chrome)]
+        //[DataRow(Browser.Firefox)]
         //[DataRow(Browser.IE)]
-        //[DataRow(Browser.Edge)]
+        [DataRow(Browser.Edge)]
         public void CanScrollToElement(Browser browser)
         {
             var searchesRelatedText = By.CssSelector("div[class=\"e2BEnf U7izfe\"]");
