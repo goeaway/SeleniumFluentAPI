@@ -15,19 +15,27 @@ namespace SeleniumScript.Abstractions
 
         IExecution Refresh();
         IExecution Refresh(string actionName);
+
         IExecution NavigateTo(IPage page);
         IExecution NavigateTo(IPage page, string actionName);
         IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters);
         IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters, string actionName);
         IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters);
         IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters, string actionName);
+
         IExecution Access(IDomain domain);
         IExecution Access(IDomain domain, string actionName);
 
         IExecution Click(By by);
         IExecution Click(By by, string actionName);
+        IExecution Click(By by, int index);
+        IExecution Click(By by, int index, string actionName);
+
         IExecution Input(By by, string textToInput);
         IExecution Input(By by, string textToInput, string actionName);
+        IExecution Input(By by, int index, string textToInput);
+        IExecution Input(By by, int index, string textToInput, string actionName);
+
         IExecution Select(By by, int index);
         IExecution Select(By by, int index, string actionName);
         IExecution Select(By by, string value, SelectionType selectionType);
@@ -37,14 +45,17 @@ namespace SeleniumScript.Abstractions
         IExecution ScrollTo(By by, string actionName);
         IExecution Scroll(int pixels, bool up);
         IExecution Scroll(int pixels, bool up, string actionName);
+
         IExecution MoveMouseTo(By by);
         IExecution MoveMouseTo(By by, string actionName);
         IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction);
         IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction, string actionName);
         IExecution MoveMouseTo(int x, int y);
         IExecution MoveMouseTo(int x, int y, string actionName);
+
         IExecution ClickAndHold(By by);
         IExecution ClickAndHold(By by, string actionName);
+
         IExecution ReleaseClick();
         IExecution ReleaseClick(string actionName);
 
@@ -54,6 +65,7 @@ namespace SeleniumScript.Abstractions
 
         IExecution Add(Func<IWebDriver, bool> component);
         IExecution Add(Func<IWebDriver, bool> component, string actionName);
+
         IExecution Complete();
 
         IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory);

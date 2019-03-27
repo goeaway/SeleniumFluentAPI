@@ -93,6 +93,30 @@ namespace SeleniumScript.Components
             return Click(by, "Click");
         }
 
+        public IExecution Click(By by, int index)
+        {
+            return Click(by, index, "Click");
+        }
+
+        public IExecution Click(By by, int index, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                try
+                {
+                    var elements = driver.FindElements(by);
+                    elements[index].Click();
+                    return true;
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new ExecutionFailureException("Failed to find element with index: " + index);
+                }
+            }, actionName);
+
+            return this;
+        }
+
         public IExecution Input(By by, string textToInput, string actionName)
         {
             InnerAddWithPolicy(driver =>
@@ -110,6 +134,30 @@ namespace SeleniumScript.Components
         public IExecution Input(By by, string textToInput)
         {
             return Input(by, textToInput, "Input");
+        }
+
+        public IExecution Input(By by, int index, string textToInput)
+        {
+            return Input(by, index, textToInput, "Input");
+        }
+
+        public IExecution Input(By by, int index, string textToInput, string actionName)
+        {
+            InnerAddWithPolicy(driver =>
+            {
+                try
+                {
+                    var elements = driver.FindElements(by);
+                    elements[index].SendKeys(textToInput);
+                    return true;
+                }
+                catch (IndexOutOfRangeException)
+                { 
+                    throw new ExecutionFailureException("Failed to find element with index: " + index);
+                }
+            }, actionName);
+
+            return this;
         }
 
         public IExecution Select(By by, int index)
@@ -446,7 +494,7 @@ namespace SeleniumScript.Components
             var results = new List<ExecutionResult>();
 
             var driver = webDriverFactory.CreateWebDriver();
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.MinValue;
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(2);
             try
             {
                 foreach (var action in _actions)

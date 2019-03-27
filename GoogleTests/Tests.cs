@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using GoogleTests.Google;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -18,6 +19,7 @@ namespace GoogleTests
     public class Tests
     {
         private const bool LOCAL = true;
+        private readonly static GoogleDomain domain = new GoogleDomain();
 
         // set protected mode on all zones in IE > internet options > security tab
 
@@ -49,7 +51,6 @@ namespace GoogleTests
             throw new NotSupportedException();
         }
 
-
         [TestMethod]
         [DataRow(Browser.Chrome)]
         [DataRow(Browser.Edge)]
@@ -57,8 +58,6 @@ namespace GoogleTests
         [DataRow(Browser.Firefox)]
         public void CanAccessGoogle(Browser browser)
         {
-            var domain = new GoogleDomain();
-
             var execution = Execution
                 .New()
                 .ExceptionOnAssertionFailure(false)
@@ -81,6 +80,23 @@ namespace GoogleTests
             }
 
             Assert.IsTrue(results.All(r => r.Success));
+        }
+
+        [TestMethod]
+        [DataRow(Browser.Chrome)]
+        //[DataRow(Browser.Edge)]
+        [DataRow(Browser.Firefox)]
+        [DataRow(Browser.IE)]
+        public void CanClickXIndexLink(Browser browser)
+        {
+            var execution = Execution.New()
+                .Access(domain)
+                .Input(domain.HomePage.SearchInput, "search")
+                .Click(domain.HomePage.SearchButton)
+                .Click(domain.SearchPage.ResultsLinks, 0);
+
+            var factory = GetFactory(browser);
+            var result = execution.Execute(factory, onExecutionCompletion: d => { Thread.Sleep(2000); });
         }
     }
 }

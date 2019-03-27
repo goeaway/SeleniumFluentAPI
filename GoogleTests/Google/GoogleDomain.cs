@@ -15,5 +15,7 @@ namespace GoogleTests.Google
 
         [DefaultPage]
         public HomePage HomePage => new HomePage(this);
+
+        public SearchPage SearchPage => new SearchPage(this);
     }
 }
