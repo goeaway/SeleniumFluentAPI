@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.Extensions;
 using OpenQA.Selenium.Support.UI;
 using Polly;
 using SeleniumScript.Abstractions;
@@ -15,6 +16,9 @@ using SeleniumScript.Utilities;
 
 namespace SeleniumScript.Components
 {
+    /// <summary>
+    /// Main actor for the SeleniumScript library. Implementation of the <see cref="IExecution"/> interface
+    /// </summary>
     public class Execution : IExecution
     {
         private readonly List<ExecutionAction> _actions;
@@ -23,6 +27,9 @@ namespace SeleniumScript.Components
         private bool _throwOnAssertionFailure;
         private bool _throwOnWaitException;
 
+        /// <summary>
+        /// Initialises a new <see cref="Execution"/> instance
+        /// </summary>
         public Execution()
         {
             _actionRetryWaitPeriod = TimeSpan.MinValue;
@@ -53,7 +60,7 @@ namespace SeleniumScript.Components
                 }
                 catch (Exception e)
                 {
-                    throw new ExecutionFailureException(e);
+                    throw new ExecutionFailureException($"{actionName} failed", e);
                 }
             }));
         }
@@ -70,7 +77,7 @@ namespace SeleniumScript.Components
                 }
                 catch (Exception e)
                 {
-                    throw new ExecutionFailureException(e);
+                    throw new ExecutionFailureException($"{actionName} failed", e);
                 }
             }));
         }
@@ -323,7 +330,15 @@ namespace SeleniumScript.Components
 
         public IExecution ScrollTo(By by, string actionName)
         {
-            return MoveMouseTo(by, actionName);
+            InnerAddWithPolicy(driver =>
+            {
+                var element = driver.FindElement(by);
+                driver.ExecuteJavaScript<string>("arguments[0].scrollIntoView(true);", element);
+
+                return true;
+            }, actionName);
+
+            return this;
         }
 
         public IExecution ScrollTo(By by)
@@ -471,35 +486,77 @@ namespace SeleniumScript.Components
             return this;
         }
 
+        /// <summary>
+        /// Executes each component of the <see cref="Execution"/> in the order they were added.
+        /// </summary>
+        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
+        /// <returns></returns>
         public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory)
         {
-            return Execute(webDriverFactory, context => { }, driver => { });
+            return Execute(webDriverFactory, driver => { }, (driver, context) => { }, driver => true);
         }
 
+        
         public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory,
-            Action<IExecutionContext> onActionStart)
+            Action<IWebDriver> onExecutionStart)
         {
-            return Execute(webDriverFactory, onActionStart, driver => { });
+            return Execute(webDriverFactory, onExecutionStart, (driver, context) => { }, driver => true);
         }
 
+        
+        public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory,
+            Action<IWebDriver, IExecutionContext> onActionStart)
+        {
+            return Execute(webDriverFactory, driver => { }, onActionStart, driver => true);
+        }
+
+        
         public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory, 
-            Action<IWebDriver> onExecutionCompletion)
+            Func<IWebDriver, bool> onExecutionCompletion)
         {
-            return Execute(webDriverFactory, context => { }, onExecutionCompletion);
+            return Execute(webDriverFactory, driver => { }, (driver, context) => { }, onExecutionCompletion);
         }
 
+        
         public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory,
-            Action<IExecutionContext> onActionStart, Action<IWebDriver> onExecutionCompletion)
+            Action<IWebDriver> onExecutionStart,
+            Func<IWebDriver, bool> onExecutionCompletion)
+        {
+            return Execute(webDriverFactory, onExecutionStart, (driver, context) => { }, onExecutionCompletion);
+        }
+
+        
+        public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory,
+            Action<IWebDriver, IExecutionContext> onActionStart,
+            Func<IWebDriver, bool> onExecutionCompletion)
+        {
+            return Execute(webDriverFactory, driver => { }, onActionStart, onExecutionCompletion);
+        }
+
+        
+        public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory,
+            Action<IWebDriver> onExecutionStart,
+            Action<IWebDriver, IExecutionContext> onActionStart)
+        {
+            return Execute(webDriverFactory, onExecutionStart, onActionStart, driver => true);
+        }
+
+        
+        public IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory,
+            Action<IWebDriver> onExecutionStart,
+            Action<IWebDriver, IExecutionContext> onActionStart, 
+            Func<IWebDriver, bool> onExecutionCompletion)
         {
             var results = new List<ExecutionResult>();
 
             var driver = webDriverFactory.CreateWebDriver();
-            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(3);
+            onExecutionStart(driver);
+
             try
             {
                 foreach (var action in _actions)
                 {
-                    onActionStart(ExecutionContext.GetContext(driver.Url, action.Name));
+                    onActionStart(driver, ExecutionContext.GetContext(driver.Url, action.Name));
 
                     var result = action.Action(driver);
 
@@ -510,11 +567,16 @@ namespace SeleniumScript.Components
             }
             finally
             {
-                onExecutionCompletion(driver);
-                DriverQuitter.Quit(driver);
+                var quit = onExecutionCompletion(driver);
+                if(quit)
+                    DriverQuitter.Quit(driver);
             }
         }
 
+        /// <summary>
+        /// Creates a new <see cref="Execution"/> 
+        /// </summary>
+        /// <returns></returns>
         public static Execution New()
         {
             return new Execution();

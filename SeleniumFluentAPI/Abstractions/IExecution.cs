@@ -4,13 +4,33 @@ using System.Text;
 using OpenQA.Selenium;
 using SeleniumScript.Components;
 using SeleniumScript.Enums;
+using SeleniumScript.Exceptions;
 
 namespace SeleniumScript.Abstractions
 {
+    /// <summary>
+    /// Defines the interface through which consumers can execute user actions which alter the state and trigger behaviour of a page or it's elements
+    /// </summary>
     public interface IExecution
     {
+        /// <summary>
+        /// Sets how many times a failure to interact with the <see cref="IWebDriver"/> and or an <see cref="IWebElement"/> should be retried before throwing an <see cref="ExecutionFailureException"/>
+        /// </summary>
+        /// <param name="count">The number of times to retry an interaction</param>
+        /// <param name="intervalWaitPeriod">The time period, represented by a <see cref="TimeSpan"/>, between each try</param>
+        /// <returns></returns>
         IExecution RetryCount(int count, TimeSpan intervalWaitPeriod);
+        /// <summary>
+        /// Sets if an exception should be thrown if an <see cref="IAssertion"/> fails
+        /// </summary>
+        /// <param name="throwException"></param>
+        /// <returns></returns>
         IExecution ExceptionOnAssertionFailure(bool throwException);
+        /// <summary>
+        /// Sets if an exception should be thrown if an <see cref="IWait"/> fails
+        /// </summary>
+        /// <param name="throwException"></param>
+        /// <returns></returns>
         IExecution ExceptionOnWaitFailure(bool throwException);
 
         IExecution Refresh();
@@ -68,9 +88,84 @@ namespace SeleniumScript.Abstractions
 
         IExecution Complete();
 
+        /// <summary>
+        /// Executes each component of the <see cref="Execution"/> in the order they were added.
+        /// </summary>
+        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
+        /// <returns></returns>
         IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory);
-        IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory, Action<IExecutionContext> onActionStart);
-        IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory, Action<IWebDriver> onExecutionCompletion);
-        IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory, Action<IExecutionContext> onActionStart, Action<IWebDriver> onExecutionCompletion);
+        /// <summary>
+        /// Executes each component of the <see cref="Execution"/> in the order they were added.
+        /// </summary>
+        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
+        /// <param name="onExecutionStart">An <see cref="Action"/> called after the <see cref="IWebDriver"/> is initialised, but before any execution components are executed</param>
+        /// <returns></returns>
+        IEnumerable<ExecutionResult> Execute(
+            IWebDriverFactory webDriverFactory, 
+            Action<IWebDriver> onExecutionStart);
+        /// <summary>
+        /// Executes each component of the <see cref="Execution"/> in the order they were added.
+        /// </summary>
+        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
+        /// <param name="onActionStart">An <see cref="Action"/> called before each execution component is executed</param>
+        /// <returns></returns>
+        IEnumerable<ExecutionResult> Execute(
+            IWebDriverFactory webDriverFactory, 
+            Action<IWebDriver, IExecutionContext> onActionStart);
+        /// <summary>
+        /// Executes each component of the <see cref="Execution"/> in the order they were added.
+        /// </summary>
+        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
+        /// <param name="onExecutionCompletion">A <see cref="Func{IWebDriver, bool}>"/> called after all execution components are executed, or after an unhandled exception occurs. Return true from the func if the <see cref="IWebDriver"/> should be quit automatically</param>
+        /// <returns></returns>
+        IEnumerable<ExecutionResult> Execute(
+            IWebDriverFactory webDriverFactory, 
+            Func<IWebDriver, bool> onExecutionCompletion);
+        /// <summary>
+        /// Executes each component of the <see cref="Execution"/> in the order they were added.
+        /// </summary>
+        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
+        /// <param name="onExecutionStart">An <see cref="Action"/> called after the <see cref="IWebDriver"/> is initialised, but before any execution components are executed</param>
+        /// <param name="onExecutionCompletion">A <see cref="Func{IWebDriver, bool}>"/> called after all execution components are executed, or after an unhandled exception occurs. Return true from the func if the <see cref="IWebDriver"/> should be quit automatically</param>
+        /// <returns></returns>
+        IEnumerable<ExecutionResult> Execute(
+            IWebDriverFactory webDriverFactory,
+            Action<IWebDriver> onExecutionStart,
+            Func<IWebDriver, bool> onExecutionCompletion);
+        /// <summary>
+        /// Executes each component of the <see cref="Execution"/> in the order they were added.
+        /// </summary>
+        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
+        /// <param name="onExecutionStart">An <see cref="Action"/> called after the <see cref="IWebDriver"/> is initialised, but before any execution components are executed</param>
+        /// <param name="onActionStart">An <see cref="Action"/> called before each execution component is executed</param>
+        /// <returns></returns>
+        IEnumerable<ExecutionResult> Execute(
+            IWebDriverFactory webDriverFactory,
+            Action<IWebDriver> onExecutionStart,
+            Action<IWebDriver, IExecutionContext> onActionStart);
+        /// <summary>
+        /// Executes each component of the <see cref="Execution"/> in the order they were added.
+        /// </summary>
+        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
+        /// <param name="onActionStart">An <see cref="Action"/> called before each execution component is executed</param>
+        /// <param name="onExecutionCompletion">A <see cref="Func{IWebDriver, bool}>"/> called after all execution components are executed, or after an unhandled exception occurs. Return true from the func if the <see cref="IWebDriver"/> should be quit automatically</param>
+        /// <returns></returns>
+        IEnumerable<ExecutionResult> Execute(
+            IWebDriverFactory webDriverFactory, 
+            Action<IWebDriver, IExecutionContext> onActionStart, 
+            Func<IWebDriver, bool> onExecutionCompletion);
+        /// <summary>
+        /// Executes each component of the <see cref="Execution"/> in the order they were added.
+        /// </summary>
+        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
+        /// <param name="onExecutionStart">An <see cref="Action"/> called after the <see cref="IWebDriver"/> is initialised, but before any execution components are executed</param>
+        /// <param name="onActionStart">An <see cref="Action"/> called before each execution component is executed</param>
+        /// <param name="onExecutionCompletion">A <see cref="Func{IWebDriver, bool}>"/> called after all execution components are executed, or after an unhandled exception occurs. Return true from the func if the <see cref="IWebDriver"/> should be quit automatically</param>
+        /// <returns></returns>
+        IEnumerable<ExecutionResult> Execute(
+            IWebDriverFactory webDriverFactory, 
+            Action<IWebDriver> onExecutionStart, 
+            Action<IWebDriver, IExecutionContext> onActionStart, 
+            Func<IWebDriver, bool> onExecutionCompletion);
     }
 }

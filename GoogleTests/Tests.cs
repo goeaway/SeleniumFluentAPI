@@ -96,7 +96,33 @@ namespace GoogleTests
                 .Click(domain.SearchPage.ResultsLinks, 0);
 
             var factory = GetFactory(browser);
-            var result = execution.Execute(factory, onExecutionCompletion: d => { Thread.Sleep(2000); });
+            var result = execution.Execute(factory, onExecutionCompletion: d => { Thread.Sleep(2000); return true; });
+        }
+
+        [TestMethod]
+        [DataRow(Browser.Chrome)]
+        [DataRow(Browser.Firefox)]
+        //[DataRow(Browser.IE)]
+        //[DataRow(Browser.Edge)]
+        public void CanScrollToElement(Browser browser)
+        {
+            var searchesRelatedText = By.CssSelector("div[class=\"e2BEnf U7izfe\"]");
+
+            var execution = Execution.New()
+                .Access(domain)
+                .RetryCount(2, TimeSpan.FromSeconds(5))
+                .Input(domain.HomePage.SearchInput, "search")
+                .Click(domain.HomePage.SearchButton, "click search")
+                .ScrollTo(searchesRelatedText)
+                .Expect
+                .ToBeAbleSeeElement(searchesRelatedText)
+                .Then;
+
+            var factory = GetFactory(browser);
+            var result = execution.Execute(factory, onExecutionCompletion: d => {
+                Thread.Sleep(2000);
+                return true;
+            });
         }
     }
 }
