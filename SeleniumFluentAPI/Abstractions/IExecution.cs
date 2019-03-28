@@ -5,6 +5,7 @@ using OpenQA.Selenium;
 using SeleniumScript.Components;
 using SeleniumScript.Enums;
 using SeleniumScript.Exceptions;
+using SeleniumScript.Utilities;
 
 namespace SeleniumScript.Abstractions
 {
@@ -46,35 +47,31 @@ namespace SeleniumScript.Abstractions
         IExecution Access(IDomain domain);
         IExecution Access(IDomain domain, string actionName);
 
-        IExecution Click(By by);
-        IExecution Click(By by, string actionName);
-        IExecution Click(By by, int index);
-        IExecution Click(By by, int index, string actionName);
+        IExecution Click(Locator locator);
+        IExecution Click(Locator locator, string actionName);
 
-        IExecution Input(By by, string textToInput);
-        IExecution Input(By by, string textToInput, string actionName);
-        IExecution Input(By by, int index, string textToInput);
-        IExecution Input(By by, int index, string textToInput, string actionName);
+        IExecution Input(Locator locator, string textToInput);
+        IExecution Input(Locator locator, string textToInput, string actionName);
 
-        IExecution Select(By by, int index);
-        IExecution Select(By by, int index, string actionName);
-        IExecution Select(By by, string value, SelectionType selectionType);
-        IExecution Select(By by, string value, SelectionType selectionType, string actionName);
+        IExecution Select(Locator locator, int index);
+        IExecution Select(Locator locator, int index, string actionName);
+        IExecution Select(Locator locator, string value, SelectionType selectionType);
+        IExecution Select(Locator locator, string value, SelectionType selectionType, string actionName);
 
-        IExecution ScrollTo(By by);
-        IExecution ScrollTo(By by, string actionName);
+        IExecution ScrollTo(Locator locator);
+        IExecution ScrollTo(Locator locator, string actionName);
         IExecution Scroll(int pixels, bool up);
         IExecution Scroll(int pixels, bool up, string actionName);
 
-        IExecution MoveMouseTo(By by);
-        IExecution MoveMouseTo(By by, string actionName);
-        IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction);
-        IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction, string actionName);
+        IExecution MoveMouseTo(Locator locator);
+        IExecution MoveMouseTo(Locator locator, string actionName);
+        IExecution MoveMouseTo(Locator locator, int pixelOffset, PixelOffsetDirection direction);
+        IExecution MoveMouseTo(Locator locator, int pixelOffset, PixelOffsetDirection direction, string actionName);
         IExecution MoveMouseTo(int x, int y);
         IExecution MoveMouseTo(int x, int y, string actionName);
 
-        IExecution ClickAndHold(By by);
-        IExecution ClickAndHold(By by, string actionName);
+        IExecution ClickAndHold(Locator locator);
+        IExecution ClickAndHold(Locator locator, string actionName);
 
         IExecution ReleaseClick();
         IExecution ReleaseClick(string actionName);

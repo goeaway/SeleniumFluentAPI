@@ -53,112 +53,122 @@ namespace SeleniumScript.Components
             }));
         }
 
-        public IWait ForElementToExist(By by, TimeSpan timeout)
+        public IWait ForElementToExist(Locator locator, TimeSpan timeout)
         {
-            return ForElementToExist(by, timeout, "For Element To Exist");
+            return ForElementToExist(locator, timeout, "For Element To Exist");
         }
 
-        public IWait ForElementToExist(By by, TimeSpan timeout, string actionName)
+        public IWait ForElementToExist(Locator locator, TimeSpan timeout, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
                 var waiter = new WebDriverWait(driver, timeout);
-                var result = waiter.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(by));
-                // if we got here the element exists
-                return true;
+                return waiter.Until(d =>
+                {
+                    IWebElement element = null;
+                    try
+                    {
+                        element = locator.FindElement(d);
+                    }
+                    catch (NoSuchElementException)
+                    {
+                    }
+
+                    return element != null;
+                });
             }, actionName);
 
             return this;
         }
 
-        public IWait ForElementToNotExist(By by, TimeSpan timeout)
+        public IWait ForElementToNotExist(Locator locator, TimeSpan timeout)
         {
-            return ForElementToNotExist(by, timeout, "For Element To Exist");
+            return ForElementToNotExist(locator, timeout, "For Element To Exist");
         }
 
-        public IWait ForElementToNotExist(By by, TimeSpan timeout, string actionName)
+        public IWait ForElementToNotExist(Locator locator, TimeSpan timeout, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var start = DateTime.Now;
-                IWebElement element = null;
-                do
+                var waiter = new WebDriverWait(driver, timeout);
+                return waiter.Until(d =>
                 {
+                    IWebElement element = null;
                     try
                     {
-                        element = driver.FindElement(by);
+                        element = locator.FindElement(d);
                     }
                     catch (NoSuchElementException)
                     {
                         element = null;
                     }
-                } while (element == null || (DateTime.Now - start) > timeout);
 
-                return element == null;
+                    return element == null;
+                });
             }, actionName);
 
             return this;
         }
 
-        public IWait ForElementToBeDisplayed(By by, TimeSpan timeout)
+        public IWait ForElementToBeDisplayed(Locator locator, TimeSpan timeout)
         {
-            return ForElementToBeDisplayed(by, timeout, "For Element To Show");
+            return ForElementToBeDisplayed(locator, timeout, "For Element To Show");
         }
 
-        public IWait ForElementToBeDisplayed(By by, TimeSpan timeout, string actionName)
+        public IWait ForElementToBeDisplayed(Locator locator, TimeSpan timeout, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
                 var waiter = new WebDriverWait(driver, timeout);
-                return waiter.Until(d => d.FindElement(by).Displayed);
+                return waiter.Until(d => locator.FindElement(d).Displayed);
             }, actionName);
 
             return this;
         }
 
-        public IWait ForElementToBeHidden(By by, TimeSpan timeout)
+        public IWait ForElementToBeHidden(Locator locator, TimeSpan timeout)
         {
-            return ForElementToBeHidden(by, timeout, "For Element To Show");
+            return ForElementToBeHidden(locator, timeout, "For Element To Show");
         }
 
-        public IWait ForElementToBeHidden(By by, TimeSpan timeout, string actionName)
+        public IWait ForElementToBeHidden(Locator locator, TimeSpan timeout, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
                 var waiter = new WebDriverWait(driver, timeout);
-                return waiter.Until(d => !d.FindElement(by).Displayed);
+                return waiter.Until(d => !locator.FindElement(d).Displayed);
             }, actionName);
 
             return this;
         }
 
-        public IWait ForElementToBeEnabled(By by, TimeSpan timeout)
+        public IWait ForElementToBeEnabled(Locator locator, TimeSpan timeout)
         {
-            return ForElementToBeEnabled(by, timeout, "For Element To Be Enabled");
+            return ForElementToBeEnabled(locator, timeout, "For Element To Be Enabled");
         }
 
-        public IWait ForElementToBeEnabled(By by, TimeSpan timeout, string actionName)
+        public IWait ForElementToBeEnabled(Locator locator, TimeSpan timeout, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
                 var waiter = new WebDriverWait(driver, timeout);
-                return waiter.Until(d => d.FindElement(by).Enabled);
+                return waiter.Until(d => locator.FindElement(d).Enabled);
             }, actionName);
 
             return this;
         }
 
-        public IWait ForElementToBeDisabled(By by, TimeSpan timeout)
+        public IWait ForElementToBeDisabled(Locator locator, TimeSpan timeout)
         {
-            return ForElementToBeDisabled(by, timeout, "For Element To Be Disabled");
+            return ForElementToBeDisabled(locator, timeout, "For Element To Be Disabled");
         }
 
-        public IWait ForElementToBeDisabled(By by, TimeSpan timeout, string actionName)
+        public IWait ForElementToBeDisabled(Locator locator, TimeSpan timeout, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
                 var waiter = new WebDriverWait(driver, timeout);
-                return waiter.Until(d => !d.FindElement(by).Enabled);
+                return waiter.Until(d => !locator.FindElement(d).Enabled);
             }, actionName);
 
             return this;

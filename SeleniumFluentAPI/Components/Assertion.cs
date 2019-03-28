@@ -92,48 +92,48 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IAssertion ToBeAbleSeeElement(By by)
+        public IAssertion ToBeAbleSeeElement(Locator locator)
         {
-            return ToBeAbleSeeElement(by, "To Be Able To See Element");
+            return ToBeAbleSeeElement(locator, "To Be Able To See Element");
         }
 
-        public IAssertion ToBeAbleSeeElement(By by, string actionName)
+        public IAssertion ToBeAbleSeeElement(Locator locator, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 return element == null ? false : element.Displayed;
             }, actionName);
 
             return this;
         }
 
-        public IAssertion ToBeAbleToClickElement(By by)
+        public IAssertion ToBeAbleToClickElement(Locator locator)
         {
-            return ToBeAbleToClickElement(by, "To Be Able To Click Element");
+            return ToBeAbleToClickElement(locator, "To Be Able To Click Element");
         }
 
-        public IAssertion ToBeAbleToClickElement(By by, string actionName)
+        public IAssertion ToBeAbleToClickElement(Locator locator, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 return element == null ? false : element.Enabled;
             }, actionName);
 
             return this;
         }
 
-        public IAssertion ElementToPassThis(By by, Predicate<IWebElement> predicate)
+        public IAssertion ElementToPassThis(Locator locator, Predicate<IWebElement> predicate)
         {
-            return ElementToPassThis(by, predicate, "Custom Element Assertion");
+            return ElementToPassThis(locator, predicate, "Custom Element Assertion");
         }
 
-        public IAssertion ElementToPassThis(By by, Predicate<IWebElement> predicate, string actionName)
+        public IAssertion ElementToPassThis(Locator locator, Predicate<IWebElement> predicate, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 return predicate(element);
             }, actionName);
 
@@ -188,48 +188,48 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IAssertion ElementToHaveClass(By by, string className)
+        public IAssertion ElementToHaveClass(Locator locator, string className)
         {
-            return ElementToHaveClass(by, className, "Element To Have Class");
+            return ElementToHaveClass(locator, className, "Element To Have Class");
         }
 
-        public IAssertion ElementToHaveClass(By by, string className, string actionName)
+        public IAssertion ElementToHaveClass(Locator locator, string className, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 return element.GetAttribute("class").Contains(className);
             }, actionName);
 
             return this;
         }
 
-        public IAssertion ElementToHaveAttr(By by, string attribute)
+        public IAssertion ElementToHaveAttr(Locator locator, string attribute)
         {
-            return ElementToHaveAttr(by, attribute, "Element To Have Attr");
+            return ElementToHaveAttr(locator, attribute, "Element To Have Attr");
         }
 
-        public IAssertion ElementToHaveAttr(By by, string attribute, string actionName)
+        public IAssertion ElementToHaveAttr(Locator locator, string attribute, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 return !string.IsNullOrWhiteSpace(element.GetAttribute(attribute));
             }, actionName);
 
             return this;
         }
 
-        public IAssertion ElementToHaveAttrValue(By by, string attribute, string value)
+        public IAssertion ElementToHaveAttrValue(Locator locator, string attribute, string value)
         {
-            return ElementToHaveAttrValue(by, attribute, value, "Element To Have Attr Value");
+            return ElementToHaveAttrValue(locator, attribute, value, "Element To Have Attr Value");
         }
 
-        public IAssertion ElementToHaveAttrValue(By by, string attribute, string value, string actionName)
+        public IAssertion ElementToHaveAttrValue(Locator locator, string attribute, string value, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 var attr = element.GetAttribute(attribute);
 
                 return !string.IsNullOrWhiteSpace(attr) && attr == value;

@@ -58,6 +58,18 @@ namespace SeleniumScript.Components
 
                     return new ExecutionResult(result, driver.Url, actionName);
                 }
+                catch (ExecutionFailureException e)
+                {
+                    throw e;
+                }
+                catch (AssertionFailureException e)
+                {
+                    throw e;
+                }
+                catch (WaitFailureException e)
+                {
+                    throw e;
+                }
                 catch (Exception e)
                 {
                     throw new ExecutionFailureException($"{actionName} failed", e);
@@ -75,6 +87,18 @@ namespace SeleniumScript.Components
 
                     return new ExecutionResult(result, driver.Url, actionName);
                 }
+                catch (ExecutionFailureException e)
+                {
+                    throw e;
+                }
+                catch (AssertionFailureException e)
+                {
+                    throw e;
+                }
+                catch (WaitFailureException e)
+                {
+                    throw e;
+                }
                 catch (Exception e)
                 {
                     throw new ExecutionFailureException($"{actionName} failed", e);
@@ -82,11 +106,11 @@ namespace SeleniumScript.Components
             }));
         }
 
-        public IExecution Click(By by, string actionName)
+        public IExecution Click(Locator locator, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 element.Click();
 
                 return true;
@@ -95,41 +119,16 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IExecution Click(By by)
+        public IExecution Click(Locator locator)
         {
-            return Click(by, "Click");
+            return Click(locator, "Click");
         }
 
-        public IExecution Click(By by, int index)
-        {
-            return Click(by, index, "Click");
-        }
-
-        public IExecution Click(By by, int index, string actionName)
+        public IExecution Input(Locator locator, string textToInput, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                try
-                {
-                    var elements = driver.FindElements(by);
-                    elements[index].Click();
-                    return true;
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    throw new ExecutionFailureException("Failed to find element with index: " + index);
-                }
-            }, actionName);
-
-            return this;
-        }
-
-        public IExecution Input(By by, string textToInput, string actionName)
-        {
-            InnerAddWithPolicy(driver =>
-            {
-                var element = driver.FindElement(by);
-
+                var element = locator.FindElement(driver);
                 element.SendKeys(textToInput);
 
                 return true;
@@ -138,45 +137,33 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IExecution Input(By by, string textToInput)
+        public IExecution Input(Locator locator, string textToInput)
         {
-            return Input(by, textToInput, "Input");
+            return Input(locator, textToInput, "Input");
         }
 
-        public IExecution Input(By by, int index, string textToInput)
-        {
-            return Input(by, index, textToInput, "Input");
-        }
-
-        public IExecution Input(By by, int index, string textToInput, string actionName)
+        public IExecution Input(Locator locator, int index, string textToInput, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                try
-                {
-                    var elements = driver.FindElements(by);
-                    elements[index].SendKeys(textToInput);
-                    return true;
-                }
-                catch (IndexOutOfRangeException)
-                { 
-                    throw new ExecutionFailureException("Failed to find element with index: " + index);
-                }
+                var element = locator.FindElement(driver);
+                element.SendKeys(textToInput);
+                return true;
             }, actionName);
 
             return this;
         }
 
-        public IExecution Select(By by, int index)
+        public IExecution Select(Locator locator, int index)
         {
-            return Select(by, index, "Select By Index");
+            return Select(locator, index, "Select By Index");
         }
 
-        public IExecution Select(By by, int index, string actionName)
+        public IExecution Select(Locator locator, int index, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 var select = new SelectElement(element);
 
                 select.SelectByIndex(index);
@@ -187,16 +174,16 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IExecution Select(By by, string value, SelectionType selectionType)
+        public IExecution Select(Locator locator, string value, SelectionType selectionType)
         {
-            return Select(by, value, selectionType, "Select");
+            return Select(locator, value, selectionType, "Select");
         }
 
-        public IExecution Select(By by, string value, SelectionType selectionType, string actionName)
+        public IExecution Select(Locator locator, string value, SelectionType selectionType, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 var select = new SelectElement(element);
 
                 switch (selectionType)
@@ -328,11 +315,11 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IExecution ScrollTo(By by, string actionName)
+        public IExecution ScrollTo(Locator locator, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 driver.ExecuteJavaScript<string>("arguments[0].scrollIntoView(true);", element);
 
                 return true;
@@ -341,9 +328,9 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IExecution ScrollTo(By by)
+        public IExecution ScrollTo(Locator locator)
         {
-            return ScrollTo(by, "Scroll To");
+            return ScrollTo(locator, "Scroll To");
         }
 
         public IExecution Scroll(int pixels, bool up, string actionName)
@@ -368,11 +355,11 @@ namespace SeleniumScript.Components
             return Scroll(pixels, up, "Scroll");
         }
 
-        public IExecution MoveMouseTo(By by, string actionName)
+        public IExecution MoveMouseTo(Locator locator, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 var actions = new Actions(driver);
                 actions.MoveToElement(element);
                 actions.Perform();
@@ -383,21 +370,21 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IExecution MoveMouseTo(By by)
+        public IExecution MoveMouseTo(Locator locator)
         {
-            return MoveMouseTo(by, "Move Mouse To");
+            return MoveMouseTo(locator, "Move Mouse To");
         }
 
-        public IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction)
+        public IExecution MoveMouseTo(Locator locator, int pixelOffset, PixelOffsetDirection direction)
         {
-            return MoveMouseTo(by, pixelOffset, direction);
+            return MoveMouseTo(locator, pixelOffset, direction);
         }
 
-        public IExecution MoveMouseTo(By by, int pixelOffset, PixelOffsetDirection direction, string actionName)
+        public IExecution MoveMouseTo(Locator locator, int pixelOffset, PixelOffsetDirection direction, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 var actions = new Actions(driver);
                 actions.MoveToElement(element);
                 return true;
@@ -425,16 +412,16 @@ namespace SeleniumScript.Components
             return MoveMouseTo(x, y, "Move Mouse To");
         }
 
-        public IExecution ClickAndHold(By by)
+        public IExecution ClickAndHold(Locator locator)
         {
-            return ClickAndHold(by, "Click And Hold");
+            return ClickAndHold(locator, "Click And Hold");
         }
 
-        public IExecution ClickAndHold(By by, string actionName)
+        public IExecution ClickAndHold(Locator locator, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {
-                var element = driver.FindElement(by);
+                var element = locator.FindElement(driver);
                 var actions = new Actions(driver);
                 actions.ClickAndHold(element);
                 actions.Perform();
