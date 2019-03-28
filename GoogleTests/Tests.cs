@@ -51,9 +51,8 @@ namespace GoogleTests
 
         [TestMethod]
         [DataRow(Browser.Chrome)]
-        [DataRow(Browser.Edge)]
-        [DataRow(Browser.IE)]
         [DataRow(Browser.Firefox)]
+        //[DataRow(Browser.IE)]
         public void CanAccessGoogle(Browser browser)
         {
             var execution = Execution
@@ -82,29 +81,27 @@ namespace GoogleTests
 
         [TestMethod]
         [DataRow(Browser.Chrome)]
-        //[DataRow(Browser.Edge)]
         [DataRow(Browser.Firefox)]
-        [DataRow(Browser.IE)]
+        //[DataRow(Browser.IE)]
         public void CanClickXIndexLink(Browser browser)
         {
             var execution = Execution.New()
                 .Access(domain)
                 .Input(domain.HomePage.SearchInput, "search")
                 .Click(domain.HomePage.SearchButton)
-                .Click(domain.SearchPage.ResultsLinks, 0);
+                .Click(Locator.From(domain.SearchPage.ResultsLinks, 0));
 
             var factory = GetFactory(browser);
             var result = execution.Execute(factory, onExecutionCompletion: d => { Thread.Sleep(2000); return true; });
         }
 
         [TestMethod]
-        //[DataRow(Browser.Chrome)]
-        //[DataRow(Browser.Firefox)]
+        [DataRow(Browser.Chrome)]
+        [DataRow(Browser.Firefox)]
         //[DataRow(Browser.IE)]
-        [DataRow(Browser.Edge)]
         public void CanScrollToElement(Browser browser)
         {
-            var searchesRelatedText = By.CssSelector("div[class=\"e2BEnf U7izfe\"]");
+            var searchesRelatedText = Locator.From(By.CssSelector("div[class=\"e2BEnf U7izfe\"]"));
 
             var execution = Execution.New()
                 .Access(domain)

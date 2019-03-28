@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using SeleniumScript.Abstractions;
 using SeleniumScript.Domains;
+using SeleniumScript.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +16,7 @@ namespace GoogleTests.Google.Pages
 
         public override string RelativeUri => "/";
 
-        public By SearchInput => By.Name("q");
-        public By SearchButton => By.Name("btnK");
+        public Locator SearchInput => Locator.From(By.Name("q"));
+        public Locator SearchButton => Locator.From(By.Name("btnK"));
     }
 }

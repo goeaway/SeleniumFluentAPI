@@ -14,13 +14,13 @@ namespace SeleniumScript.Utilities
         public By By { get; }
         public int Index { get; }
 
-        public Locator(By by, int index)
+        private Locator(By by, int index)
         {
             By = by;
             Index = index;
         }
 
-        public Locator(By by)
+        private Locator(By by)
         {
             By = by;
             Index = 0;
@@ -32,10 +32,32 @@ namespace SeleniumScript.Utilities
             {
                 return driver.FindElements(By)[Index];
             }
+            catch (ArgumentOutOfRangeException)
+            {
+                throw new LocatorFindException($"Could not find element with Locator: {By.ToString()} {Index}");
+            }
             catch (IndexOutOfRangeException)
             {
                 throw new LocatorFindException($"Could not find element with Locator: {By.ToString()} {Index}");
             }
+        }
+
+        public static Locator From(By by)
+        {
+            if (by == null)
+                throw new ArgumentNullException(nameof(by));
+
+            return new Locator(by);
+        }
+
+        public static Locator From(By by, int index)
+        {
+            if (by == null)
+                throw new ArgumentNullException(nameof(by));
+            if (index < 0)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            return new Locator(by, index);
         }
     }
 }
