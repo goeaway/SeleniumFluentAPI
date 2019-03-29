@@ -52,6 +52,7 @@ namespace SeleniumScript.Components
                 {
                     var result = Policy
                         .Handle<WebDriverException>()
+                        .Or<LocatorFindException>()
                         .WaitAndRetry(_actionRetries, (tryNum) => _actionRetryWaitPeriod)
                         .Execute(() =>
                         {
