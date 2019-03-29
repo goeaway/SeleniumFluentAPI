@@ -26,6 +26,7 @@ namespace SeleniumScript.Components
         private TimeSpan _actionRetryWaitPeriod;
         private bool _throwOnAssertionFailure;
         private bool _throwOnWaitException;
+        private bool _throwOnExecutionException;
 
         /// <summary>
         /// Initialises a new <see cref="Execution"/> instance
@@ -36,6 +37,7 @@ namespace SeleniumScript.Components
             _actions = new List<ExecutionAction>();
             _throwOnAssertionFailure = true;
             _throwOnWaitException = true;
+            _throwOnExecutionException = true;
         }
 
         public IAssertion Expect => new Assertion(this, _actionRetries, _actionRetryWaitPeriod, _throwOnAssertionFailure);
@@ -60,7 +62,10 @@ namespace SeleniumScript.Components
                 }
                 catch (ExecutionFailureException e)
                 {
-                    throw e;
+                    if(_throwOnExecutionException)
+                        throw e;
+
+                    throw new StopExecutionException();
                 }
                 catch (AssertionFailureException e)
                 {
@@ -72,7 +77,10 @@ namespace SeleniumScript.Components
                 }
                 catch (Exception e)
                 {
-                    throw new ExecutionFailureException($"{actionName} failed", e);
+                    if (_throwOnExecutionException)
+                        throw new ExecutionFailureException($"{actionName} failed", e);
+
+                    throw new StopExecutionException();
                 }
             }));
         }
@@ -89,7 +97,10 @@ namespace SeleniumScript.Components
                 }
                 catch (ExecutionFailureException e)
                 {
-                    throw e;
+                    if (_throwOnExecutionException)
+                        throw e;
+
+                    throw new StopExecutionException();
                 }
                 catch (AssertionFailureException e)
                 {
@@ -101,7 +112,10 @@ namespace SeleniumScript.Components
                 }
                 catch (Exception e)
                 {
-                    throw new ExecutionFailureException($"{actionName} failed", e);
+                    if (_throwOnExecutionException)
+                        throw new ExecutionFailureException($"{actionName} failed", e);
+
+                    throw new StopExecutionException();
                 }
             }));
         }
@@ -473,6 +487,12 @@ namespace SeleniumScript.Components
             return this;
         }
 
+        public IExecution ExceptionOnExecutionFailure(bool throwException)
+        {
+            _throwOnExecutionException = throwException;
+            return this;
+        }
+
         /// <summary>
         /// Executes each component of the <see cref="Execution"/> in the order they were added.
         /// </summary>
@@ -545,9 +565,17 @@ namespace SeleniumScript.Components
                 {
                     onActionStart(driver, ExecutionContext.GetContext(driver.Url, action.Name));
 
-                    var result = action.Action(driver);
-
-                    results.Add(result);
+                    try
+                    {
+                        var result = action.Action(driver);
+                        results.Add(result);
+                    }
+                    catch (StopExecutionException)
+                    {
+                        // capture which execution failed so users can debug, but don't allow anymore executions
+                        results.Add(new ExecutionResult(false, driver.Url, action.Name));
+                        break;
+                    }
                 }
 
                 return results;

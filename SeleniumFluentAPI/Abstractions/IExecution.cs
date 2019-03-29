@@ -33,6 +33,12 @@ namespace SeleniumScript.Abstractions
         /// <param name="throwException"></param>
         /// <returns></returns>
         IExecution ExceptionOnWaitFailure(bool throwException);
+        /// <summary>
+        /// Sets if an exception should be thrown if an <see cref="IExecution"/> fails
+        /// </summary>
+        /// <param name="throwException"></param>
+        /// <returns></returns>
+        IExecution ExceptionOnExecutionFailure(bool throwException);
 
         IExecution Refresh();
         IExecution Refresh(string actionName);

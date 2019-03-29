@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using GoogleTests.Google;
@@ -10,6 +11,7 @@ using OpenQA.Selenium.Opera;
 using SeleniumScript.Abstractions;
 using SeleniumScript.Components;
 using SeleniumScript.Enums;
+using SeleniumScript.Exceptions;
 using SeleniumScript.Utilities;
 using WebDriverManager.DriverConfigs.Impl;
 
@@ -52,7 +54,6 @@ namespace GoogleTests
         [TestMethod]
         [DataRow(Browser.Chrome)]
         [DataRow(Browser.Firefox)]
-        //[DataRow(Browser.IE)]
         public void CanAccessGoogle(Browser browser)
         {
             var execution = Execution
@@ -82,7 +83,6 @@ namespace GoogleTests
         [TestMethod]
         [DataRow(Browser.Chrome)]
         [DataRow(Browser.Firefox)]
-        //[DataRow(Browser.IE)]
         public void CanClickXIndexLink(Browser browser)
         {
             var execution = Execution.New()
@@ -98,7 +98,6 @@ namespace GoogleTests
         [TestMethod]
         [DataRow(Browser.Chrome)]
         [DataRow(Browser.Firefox)]
-        //[DataRow(Browser.IE)]
         public void CanScrollToElement(Browser browser)
         {
             var searchesRelatedText = Locator.From(By.CssSelector("div[class=\"e2BEnf U7izfe\"]"));
@@ -117,6 +116,163 @@ namespace GoogleTests
             var result = execution.Execute(factory, onExecutionCompletion: d => {
                 Thread.Sleep(2000);
                 return true;
+            });
+        }
+
+        [TestMethod]
+        public void ExecutionStopsOnFailureWhenExceptionsAreCaught()
+        {
+            var execution = Execution
+                .New()
+                .Access(domain)
+                .ExceptionOnExecutionFailure(false)
+                .Click(Locator.From(By.Name("made-up-thing-this-wont-exist")))
+                .Input(domain.HomePage.SearchInput, "search");
+
+            var factory = GetFactory(Browser.Chrome);
+            var completed = false;
+
+            var result = execution.Execute(factory, onExecutionCompletion: d =>
+            {
+                completed = true;
+                return true;
+            });
+
+            Assert.IsTrue(completed);
+            Assert.IsTrue(result.Count() == 2);
+            Assert.IsTrue(!result.Last().Success);
+        }
+
+        [TestMethod]
+        public void ThrowsWhenExeExceptionsAreNotCaught()
+        {
+            var execution = Execution
+                .New()
+                .Access(domain)
+                .Click(Locator.From(By.Name("made-up-thing-this-wont-exist")))
+                .Input(domain.HomePage.SearchInput, "search");
+
+            var factory = GetFactory(Browser.Chrome);
+
+            Assert.ThrowsException<ExecutionFailureException>(() =>
+            {
+                var result = execution.Execute(factory);
+            });
+        }
+
+        [TestMethod]
+        public void ThrowsWhenWaitExceptionsAreNotCaught()
+        {
+            var execution = Execution
+                .New()
+                .Access(domain)
+                .Wait
+                .ForElementToExist(Locator.From(By.Name("asdjfkalsdfjasdfasdfasfasdfasdf")), TimeSpan.FromMilliseconds(200))
+                .Then
+                .Input(domain.HomePage.SearchInput, "search");
+
+            var factory = GetFactory(Browser.Chrome);
+
+            Assert.ThrowsException<WaitFailureException>(() =>
+            {
+                var result = execution.Execute(factory);
+            });
+        }
+
+        [TestMethod]
+        public void ContinuesWhenWaitExceptionsAreCaught()
+        {
+            var execution = Execution
+                .New()
+                .ExceptionOnWaitFailure(false)
+                .Access(domain)
+                .Wait
+                    .ForElementToExist(Locator.From(By.Name("asdjfkalsdfjasdfasdfasfasdfasdf")), TimeSpan.FromMilliseconds(200))
+                .Then
+                .Input(domain.HomePage.SearchInput, "search");
+
+            var factory = GetFactory(Browser.Chrome);
+            var result = execution.Execute(factory);
+
+            Assert.IsTrue(result.Last().Success);
+            Assert.AreEqual(3, result.Count());
+        }
+
+        [TestMethod]
+        public void ThrowsWhenAssertionExceptionsAreNotCaught()
+        {
+            var execution = Execution
+                .New()
+                .Access(domain)
+                .Expect
+                    .ToBeOn(new Uri("http://example.com"))
+                .Then
+                .Input(domain.HomePage.SearchInput, "search");
+
+            var factory = GetFactory(Browser.Chrome);
+
+            Assert.ThrowsException<AssertionFailureException>(() =>
+            {
+                var result = execution.Execute(factory);
+            });
+        }
+
+        [TestMethod]
+        public void ContinuesWhenAssertionExceptionsAreCaught()
+        {
+            var execution = Execution
+                .New()
+                .ExceptionOnAssertionFailure(false)
+                .Access(domain)
+                .Expect
+                    .ToBeOn(new Uri("http://example.com"))
+                .Then
+                .Input(domain.HomePage.SearchInput, "search");
+
+            var factory = GetFactory(Browser.Chrome);
+            var result = execution.Execute(factory);
+
+            Assert.IsTrue(result.Last().Success);
+            Assert.AreEqual(3, result.Count());
+        }
+
+        [TestMethod]
+        public void ThrowsWhenAssertionExceptionOccursButExecutionExceptionsAreCaught()
+        {
+            var execution = Execution
+                .New()
+                .ExceptionOnExecutionFailure(false)
+                .Access(domain)
+                .Expect
+                    .ToBeOn(new Uri("http://example.com"))
+                .Then
+                .Input(domain.HomePage.SearchInput, "search");
+
+            var factory = GetFactory(Browser.Chrome);
+
+            Assert.ThrowsException<AssertionFailureException>(() =>
+            {
+                var result = execution.Execute(factory);
+            });
+        }
+
+        [TestMethod]
+        public void ThrowsWhenWaitExceptionOccursButExecutionExceptionsAreCaught()
+        {
+            var execution = Execution
+                .New()
+                .ExceptionOnExecutionFailure(false)
+                .Access(domain)
+                .Wait
+                    .ForElementToExist(Locator.From(By.Name("asdjfkalsdfjasdfasdfasfasdfasdf")), TimeSpan.FromMilliseconds(200))
+                .Then
+                .Input(domain.HomePage.SearchInput, "search");
+
+            var factory = GetFactory(Browser.Chrome);
+
+            Assert.ThrowsException<WaitFailureException>(() =>
+            {
+                var result = execution.Execute(factory);
             });
         }
     }
