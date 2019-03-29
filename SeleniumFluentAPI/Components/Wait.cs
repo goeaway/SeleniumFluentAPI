@@ -70,9 +70,8 @@ namespace SeleniumScript.Components
                     {
                         element = locator.FindElement(d);
                     }
-                    catch (NoSuchElementException)
-                    {
-                    }
+                    catch(NoSuchElementException) { }
+                    catch(LocatorFindException) { }
 
                     return element != null;
                 });
