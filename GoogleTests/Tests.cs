@@ -275,5 +275,22 @@ namespace GoogleTests
                 var result = execution.Execute(factory);
             });
         }
+
+        [TestMethod]
+        public void CanHighlightOnClick()
+        {
+            var execution = Execution
+                .New()
+                .ExceptionOnExecutionFailure(false)
+                .HighlightElementOnClick(true)
+                .Access(domain)
+                .Click(Locator.From(By.TagName("body")));
+
+            var factory = GetFactory(Browser.Chrome);
+
+            var result = execution.Execute(
+                factory, 
+                onExecutionCompletion: (d) => { Thread.Sleep(20000); return true; });
+        }
     }
 }

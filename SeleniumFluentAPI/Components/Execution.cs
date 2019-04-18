@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using OpenQA.Selenium;
@@ -27,6 +28,7 @@ namespace SeleniumScript.Components
         private bool _throwOnAssertionFailure;
         private bool _throwOnWaitException;
         private bool _throwOnExecutionException;
+        private bool _highlightElementOnClick;
 
         /// <summary>
         /// Initialises a new <see cref="Execution"/> instance
@@ -127,6 +129,9 @@ namespace SeleniumScript.Components
             {
                 var element = locator.FindElement(driver);
                 element.Click();
+
+                if(_highlightElementOnClick)
+                    Highlighter.Highlight(driver, element, Color.Yellow);
 
                 return true;
             }, actionName);
@@ -473,6 +478,12 @@ namespace SeleniumScript.Components
 
             _actionRetries = count;
             _actionRetryWaitPeriod = intervalWaitPeriod;
+            return this;
+        }
+
+        public IExecution HighlightElementOnClick(bool highlight)
+        {
+            _highlightElementOnClick = highlight;
             return this;
         }
 
