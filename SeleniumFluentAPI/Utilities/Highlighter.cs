@@ -35,10 +35,19 @@ namespace SeleniumScript.Utilities
             // set the background to the color value
             driver.ExecuteJavaScript<string>($"arguments[0].style.background='{colorStr}'", element);
 
+            // create a task that'll return the element's background to the original after a period of time
             Task.Run(() =>
             {
-                Thread.Sleep(HIGHLIGHT_MILLISECONDS);
-                driver.ExecuteJavaScript<string>($"arguments[0].style.background='{existingValue}'", element);
+                try
+                {
+                    // disgraceful but whatever
+                    Thread.Sleep(HIGHLIGHT_MILLISECONDS);
+                    driver.ExecuteJavaScript<string>($"arguments[0].style.background='{existingValue}'", element);
+                }
+                catch (WebDriverException)
+                {
+                    // catch web driver exceptions, in case the element does not exist anymore or something (we don't care)
+                }
             });
         }
     }
