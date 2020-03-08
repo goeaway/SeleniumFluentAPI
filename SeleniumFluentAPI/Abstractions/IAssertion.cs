@@ -13,14 +13,12 @@ namespace SeleniumScript.Abstractions
     /// </summary>
     public interface IAssertion
     {
-        IAssertion ToBeOn(IPage page);
-        IAssertion ToBeOn(IPage page, string actionName);
         IAssertion ToBeOn(Uri uri);
         IAssertion ToBeOn(Uri uri, string actionName);
         IAssertion ToBeTrue(Func<IWebDriver, bool> assertion);
         IAssertion ToBeTrue(Func<IWebDriver, bool> assertion, string actionName);
-        IAssertion ToBeAbleSeeElement(Locator locator);
-        IAssertion ToBeAbleSeeElement(Locator locator, string actionName);
+        IAssertion ToBeAbleToSeeElement(Locator locator);
+        IAssertion ToBeAbleToSeeElement(Locator locator, string actionName);
         IAssertion ToBeAbleToClickElement(Locator locator);
         IAssertion ToBeAbleToClickElement(Locator locator, string actionName);
         IAssertion ElementToHaveClass(Locator locator, string className);

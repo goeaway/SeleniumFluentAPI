@@ -37,15 +37,12 @@ namespace SeleniumScript.Abstractions
         IExecution Refresh();
         IExecution Refresh(string actionName);
 
-        IExecution NavigateTo(IPage page);
-        IExecution NavigateTo(IPage page, string actionName);
-        IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters);
-        IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters, string actionName);
-        IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters);
-        IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters, string actionName);
-
-        IExecution Access(IDomain domain);
-        IExecution Access(IDomain domain, string actionName);
+        IExecution NavigateTo(Uri uri);
+        IExecution NavigateTo(Uri uri, string actionName);
+        IExecution NavigateTo(Uri uri, IDictionary<string, string> queryStringParameters);
+        IExecution NavigateTo(Uri uri, IDictionary<string, string> queryStringParameters, string actionName);
+        IExecution NavigateTo(Uri uri, IEnumerable<string> urlParameters);
+        IExecution NavigateTo(Uri uri, IEnumerable<string> urlParameters, string actionName);
 
         IExecution Click(Locator locator);
         IExecution Click(Locator locator, string actionName);

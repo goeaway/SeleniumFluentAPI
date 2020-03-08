@@ -52,16 +52,6 @@ namespace SeleniumScript.Components
             }));
         }
 
-        public IAssertion ToBeOn(IPage page)
-        {
-            return ToBeOn(page, "To Be On");
-        }
-
-        public IAssertion ToBeOn(IPage page, string actionName)
-        {
-            return ToBeOn(page.FullUri, actionName);
-        }
-
         public IAssertion ToBeOn(Uri uri)
         {
             return ToBeOn(uri, "To Be On");
@@ -92,12 +82,12 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IAssertion ToBeAbleSeeElement(Locator locator)
+        public IAssertion ToBeAbleToSeeElement(Locator locator)
         {
-            return ToBeAbleSeeElement(locator, "To Be Able To See Element");
+            return ToBeAbleToSeeElement(locator, "To Be Able To See Element");
         }
 
-        public IAssertion ToBeAbleSeeElement(Locator locator, string actionName)
+        public IAssertion ToBeAbleToSeeElement(Locator locator, string actionName)
         {
             InnerAddWithPolicy(driver =>
             {

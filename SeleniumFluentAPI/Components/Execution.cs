@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.Extensions;
 using OpenQA.Selenium.Support.UI;
 using Polly;
 using SeleniumScript.Abstractions;
-using SeleniumScript.Attributes;
-using SeleniumScript.Domains;
 using SeleniumScript.Enums;
 using SeleniumScript.Exceptions;
 using SeleniumScript.Utilities;
@@ -231,68 +228,38 @@ namespace SeleniumScript.Components
             return this;
         }
 
-        public IExecution NavigateTo(IPage page, string actionName)
+        public IExecution NavigateTo(Uri uri, string actionName)
         {
-            return InnerNavigateTo(page.FullUri, actionName);
+            return InnerNavigateTo(uri, actionName);
         }
 
-        public IExecution NavigateTo(IPage page)
+        public IExecution NavigateTo(Uri uri)
         {
-            return NavigateTo(page, "Navigate");
+            return NavigateTo(uri, "Navigate");
         }
 
-        public IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters)
+        public IExecution NavigateTo(Uri uri, IDictionary<string, string> queryStringParameters)
         {
-            return NavigateTo(page, queryStringParameters);
+            return NavigateTo(uri, queryStringParameters);
         }
 
-        public IExecution NavigateTo(IPage page, IDictionary<string, string> queryStringParameters, string actionName)
+        public IExecution NavigateTo(Uri uri, IDictionary<string, string> queryStringParameters, string actionName)
         {
             var queryString = string.Join("&", queryStringParameters.Select(parameter => $"{parameter.Key}={parameter.Value}"));
-            var uri = new Uri(page.FullUri, "?" + queryString);
-            return InnerNavigateTo(uri, actionName);
+            var queriedUri = new Uri(uri, "?" + queryString);
+            return InnerNavigateTo(queriedUri, actionName);
         }
 
-        public IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters)
+        public IExecution NavigateTo(Uri uri, IEnumerable<string> urlParameters)
         {
-            return NavigateTo(page, urlParameters, "Navigate");
+            return NavigateTo(uri, urlParameters, "Navigate");
         }
 
-        public IExecution NavigateTo(IPage page, IEnumerable<string> urlParameters, string actionName)
+        public IExecution NavigateTo(Uri uri, IEnumerable<string> urlParameters, string actionName)
         {
             var parameters = string.Join("/", urlParameters);
-            var uri = new Uri(page.FullUri, "/" + parameters);
-            return InnerNavigateTo(uri, actionName);
-        }
-
-        public IExecution Access(IDomain domain, string actionName)
-        {
-            var pagesWithAttribute =
-                domain.GetType()
-                    .GetProperties()
-                    .Where(p => Attribute.IsDefined(p, typeof(DefaultPageAttribute)) &&
-                                p.PropertyType.IsSubclassOf(typeof(Page)));
-
-            if (pagesWithAttribute.Count() == 0)
-                throw new DefaultPageNotFoundException("Default page could not be found when navigating to domain");
-
-            if (pagesWithAttribute.Count() != 1)
-                throw new MultipleDefaultPagesFoundException("Multiple default pages were found for domain when trying to navigate to it");
-
-            var pageToInst = pagesWithAttribute.First().PropertyType;
-            var ctor = pageToInst.GetConstructor(new Type[] { typeof(IDomain) });
-
-            if (ctor == null)
-                throw new InvalidOperationException();
-
-            var page = (IPage)ctor.Invoke(new object[] { domain });
-
-            return NavigateTo(page, actionName);
-        }
-
-        public IExecution Access(IDomain domain)
-        {
-            return Access(domain, "Access");
+            var parmeteredUrl = new Uri(uri, "/" + parameters);
+            return InnerNavigateTo(parmeteredUrl, actionName);
         }
 
         public IExecution Add(Func<IWebDriver, bool> component)
@@ -558,15 +525,6 @@ namespace SeleniumScript.Components
                 if(quit)
                     DriverQuitter.Quit(driver);
             }
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="Execution"/> 
-        /// </summary>
-        /// <returns></returns>
-        public static Execution New()
-        {
-            return new Execution();
         }
     }
 }

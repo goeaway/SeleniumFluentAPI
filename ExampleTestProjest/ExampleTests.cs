@@ -1,5 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
 using SeleniumScript.Enums;
 using SeleniumScript.Components;
 using SeleniumScript.Utilities;
@@ -11,24 +12,21 @@ namespace ExampleTestProjest
     {
         public void Example()
         {
-            var domain = new ExampleDomain();
-
-            var execution = Execution
-                .New()
+            var execution = new Execution()
                 .ExceptionOnAssertionFailure(false)
                 .RetryCount(3, TimeSpan.FromSeconds(2))
-                .Access(domain)
+                .NavigateTo(new Uri("https://localhost"))
                 .Expect
-                    .ToBeOn(domain.LoginPage)
-                    .ToBeAbleSeeElement(domain.LoginPage.LoginButton)
-                    .ToBeAbleToClickElement(domain.LoginPage.LoginButton)
+                    .ToBeOn(new Uri("https://localhost"))
+                    .ToBeAbleToSeeElement(Locator.From(By.ClassName("login")))
+                    .ToBeAbleToClickElement(Locator.From(By.ClassName("login")))
                 .Then
-                .Click(domain.LoginPage.LoginButton)
+                .Click(Locator.From(By.ClassName("login")))
                 .Wait
-                    .ForElementToBeDisabled(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(3))
-                    .ForElementToBeHidden(domain.LoginPage.LoginButton, TimeSpan.FromSeconds(2))
+                    .ForElementToBeDisabled(Locator.From(By.ClassName("login")), TimeSpan.FromSeconds(3))
+                    .ForElementToBeHidden(Locator.From(By.ClassName("login")), TimeSpan.FromSeconds(2))
                 .Then
-                .NavigateTo(domain.LoginPage)
+                    .NavigateTo(new Uri("https://localhost"))
                 .Utils
                     .SetWindowMaximised() 
                 .Then
