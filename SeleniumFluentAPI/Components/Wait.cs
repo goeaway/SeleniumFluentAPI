@@ -37,6 +37,7 @@ namespace SeleniumScript.Components
                 {
                     return Policy
                         .Handle<WebDriverException>()
+                        .Or<LocatorFindException>()
                         .WaitAndRetry(_retryCount, (tryNum) => _retryWaitPeriod)
                         .Execute(() =>
                         {
@@ -70,9 +71,8 @@ namespace SeleniumScript.Components
                     {
                         element = locator.FindElement(d);
                     }
-                    catch (NoSuchElementException)
-                    {
-                    }
+                    catch(NoSuchElementException) { }
+                    catch(LocatorFindException) { }
 
                     return element != null;
                 });

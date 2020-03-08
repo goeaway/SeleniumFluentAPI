@@ -33,6 +33,18 @@ namespace SeleniumScript.Abstractions
         /// <param name="throwException"></param>
         /// <returns></returns>
         IExecution ExceptionOnWaitFailure(bool throwException);
+        /// <summary>
+        /// Sets if an exception should be thrown if an <see cref="IExecution"/> fails
+        /// </summary>
+        /// <param name="throwException"></param>
+        /// <returns></returns>
+        IExecution ExceptionOnExecutionFailure(bool throwException);
+        /// <summary>
+        /// Sets if an element's background should be highlighted when it's clicked on. Useful for element locator debugging purposes
+        /// </summary>
+        /// <param name="highlight"></param>
+        /// <returns></returns>
+        IExecution HighlightElementOnClick(bool highlight);
 
         IExecution Refresh();
         IExecution Refresh(string actionName);

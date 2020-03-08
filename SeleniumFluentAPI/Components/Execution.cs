@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
@@ -23,6 +24,8 @@ namespace SeleniumScript.Components
         private TimeSpan _actionRetryWaitPeriod;
         private bool _throwOnAssertionFailure;
         private bool _throwOnWaitException;
+        private bool _throwOnExecutionException;
+        private bool _highlightElementOnClick;
 
         /// <summary>
         /// Initialises a new <see cref="Execution"/> instance
@@ -33,6 +36,7 @@ namespace SeleniumScript.Components
             _actions = new List<ExecutionAction>();
             _throwOnAssertionFailure = true;
             _throwOnWaitException = true;
+            _throwOnExecutionException = true;
         }
 
         public IAssertion Expect => new Assertion(this, _actionRetries, _actionRetryWaitPeriod, _throwOnAssertionFailure);
@@ -47,6 +51,7 @@ namespace SeleniumScript.Components
                 {
                     var result = Policy
                         .Handle<WebDriverException>()
+                        .Or<LocatorFindException>()
                         .WaitAndRetry(_actionRetries, (tryNum) => _actionRetryWaitPeriod)
                         .Execute(() =>
                         {
@@ -57,7 +62,10 @@ namespace SeleniumScript.Components
                 }
                 catch (ExecutionFailureException e)
                 {
-                    throw e;
+                    if(_throwOnExecutionException)
+                        throw e;
+
+                    throw new StopExecutionException();
                 }
                 catch (AssertionFailureException e)
                 {
@@ -69,7 +77,10 @@ namespace SeleniumScript.Components
                 }
                 catch (Exception e)
                 {
-                    throw new ExecutionFailureException($"{actionName} failed", e);
+                    if (_throwOnExecutionException)
+                        throw new ExecutionFailureException($"{actionName} failed", e);
+
+                    throw new StopExecutionException();
                 }
             }));
         }
@@ -86,7 +97,10 @@ namespace SeleniumScript.Components
                 }
                 catch (ExecutionFailureException e)
                 {
-                    throw e;
+                    if (_throwOnExecutionException)
+                        throw e;
+
+                    throw new StopExecutionException();
                 }
                 catch (AssertionFailureException e)
                 {
@@ -98,7 +112,10 @@ namespace SeleniumScript.Components
                 }
                 catch (Exception e)
                 {
-                    throw new ExecutionFailureException($"{actionName} failed", e);
+                    if (_throwOnExecutionException)
+                        throw new ExecutionFailureException($"{actionName} failed", e);
+
+                    throw new StopExecutionException();
                 }
             }));
         }
@@ -109,6 +126,9 @@ namespace SeleniumScript.Components
             {
                 var element = locator.FindElement(driver);
                 element.Click();
+
+                if(_highlightElementOnClick)
+                    Highlighter.Highlight(driver, element, Color.Yellow);
 
                 return true;
             }, actionName);
@@ -428,6 +448,12 @@ namespace SeleniumScript.Components
             return this;
         }
 
+        public IExecution HighlightElementOnClick(bool highlight)
+        {
+            _highlightElementOnClick = highlight;
+            return this;
+        }
+
         public IExecution ExceptionOnAssertionFailure(bool throwException)
         {
             _throwOnAssertionFailure = throwException;
@@ -437,6 +463,12 @@ namespace SeleniumScript.Components
         public IExecution ExceptionOnWaitFailure(bool throwException)
         {
             _throwOnWaitException = throwException;
+            return this;
+        }
+
+        public IExecution ExceptionOnExecutionFailure(bool throwException)
+        {
+            _throwOnExecutionException = throwException;
             return this;
         }
 
@@ -512,9 +544,17 @@ namespace SeleniumScript.Components
                 {
                     onActionStart(driver, ExecutionContext.GetContext(driver.Url, action.Name));
 
-                    var result = action.Action(driver);
-
-                    results.Add(result);
+                    try
+                    {
+                        var result = action.Action(driver);
+                        results.Add(result);
+                    }
+                    catch (StopExecutionException)
+                    {
+                        // capture which execution failed so users can debug, but don't allow anymore executions
+                        results.Add(new ExecutionResult(false, driver.Url, action.Name));
+                        break;
+                    }
                 }
 
                 return results;
