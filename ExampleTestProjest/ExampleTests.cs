@@ -10,6 +10,7 @@ namespace ExampleTestProjest
     [TestClass]
     public class ExampleTests
     {
+        [TestMethod]
         public void Example()
         {
             var execution = new Execution()
