@@ -17,21 +17,21 @@ namespace SeleniumScript.Components
     {
         private readonly IExecution _action;
         private readonly int _actionRetryCount;
-        private readonly TimeSpan _actionRetryWaitPeriod;
+        private readonly ICollection<TimeSpan> _actionRetryWaitPeriods;
         private readonly List<UtilityAction> _assertions;
         private readonly List<int> _assertionsToBeInverted;
 
-        public Assertion(IExecution action, int actionRetryCount, TimeSpan actionRetryWaitPeriod)
+        public Assertion(IExecution action, int actionRetryCount, ICollection<TimeSpan> actionRetryWaitPeriods)
         {
             if(actionRetryCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(actionRetryCount));
 
-            if(actionRetryWaitPeriod == null)
-                throw new ArgumentNullException(nameof(actionRetryWaitPeriod));
+            if(actionRetryWaitPeriods == null)
+                throw new ArgumentNullException(nameof(actionRetryWaitPeriods));
 
             _action = action;
             _actionRetryCount = actionRetryCount;
-            _actionRetryWaitPeriod = actionRetryWaitPeriod;
+            _actionRetryWaitPeriods = actionRetryWaitPeriods;
             _assertions = new List<UtilityAction>();
             _assertionsToBeInverted = new List<int>();
         }
@@ -41,7 +41,9 @@ namespace SeleniumScript.Components
             _assertions.Add(new UtilityAction(actionName, driver => Policy
                     .Handle<WebDriverException>()
                     .Or<LocatorFindException>()
-                    .WaitAndRetry(_actionRetryCount, (tryNum) => _actionRetryWaitPeriod)
+                    .WaitAndRetry(
+                        _actionRetryCount, 
+                        (tryNum) => RetryWaitCalculator.GetTimeSpanForWait(tryNum, _actionRetryWaitPeriods))
                     .Execute(() => func(driver))));
         }
 
@@ -60,27 +62,18 @@ namespace SeleniumScript.Components
                     var assertionAction = _assertions[i];
                     var invert = _assertionsToBeInverted.Contains(i);
 
-                    _action.Add(driver =>
+                    _action.Custom(driver =>
                     {
-                        try
+                        var result = assertionAction.Action(driver);
+
+                        if (invert)
                         {
-                            var result = assertionAction.Action(driver);
-
-                            if (invert)
-                            {
-                                result = !result;
-                            }
-
-                            if(!result)
-                            {
-                                throw new AssertionFailureException();
-                            }
-
-                            return result;
+                            result = !result;
                         }
-                        catch (Exception e)
+
+                        if(!result)
                         {
-                            throw new AssertionFailureException(e);
+                            throw new AssertionFailureException();
                         }
                     }, assertionAction.Name);
                 }

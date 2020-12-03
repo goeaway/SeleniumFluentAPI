@@ -7,7 +7,7 @@ namespace SeleniumScript.Abstractions
 {
     public interface IExecutionContext
     {
-        string CurrentUrl { get; }
+        string Url { get; }
         string ActionName { get; }
     }
 }

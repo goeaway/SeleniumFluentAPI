@@ -12,20 +12,30 @@ namespace SeleniumScript.Tests
     {
         [TestMethod]
         [DataRow(Browser.Chrome)]
-        public void TestMethod1(Browser browser)
+        public void SwitchTabs(Browser browser)
         {
             var factory = new ManagedWebDriverFactory(browser);
 
-            new Execution()
+            var options = new ExecutionOptions
+            {
+                
+            };
+
+            var result = new Execution()
                 .NavigateTo(new Uri("https://google.com"))
-                .Wait.For(_ => {
-                    Thread.Sleep(2000);
-                    return true;
-                }, TimeSpan.FromSeconds(2))
-                .Then
-                .Expect.ToBe(driver => driver.Url.Contains("google.smom"))
-                .Then
+                .Custom(driver =>
+                {
+                    var handles = driver.WindowHandles;
+                }, "Switch Tabs")
                 .Execute(factory);
+
+            foreach(var act in result.ActionResults)
+            {
+                Console.WriteLine($"{act.Context.ActionName} {act.Success} {act.InnerException?.Message}");
+            }
+
+            Console.WriteLine(result.ActionResults.Count);
+            Assert.IsTrue(result.Success);
         }
     }
 }

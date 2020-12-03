@@ -19,7 +19,7 @@ namespace SeleniumScript.Components
             {
                 foreach (var action in _actions)
                 {
-                    _execution.Add(action.Action, action.Name);
+                    _execution.Custom(driver => action.Action(driver), action.Name);
                 }
 
                 return _execution;

@@ -1,36 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using SeleniumScript.Abstractions;
 using SeleniumScript.Enums;
 
 namespace SeleniumScript.Components
 {
+    /// <summary>
+    /// Represents the result of an execution. Contains a collection of <see cref="ActionResult"/>
+    /// </summary>
     public class ExecutionResult
     {
-        public bool Success { get; private set; }
-        public IExecutionContext Context { get; set; }
-        public string Message { get; private set; }
-        public Exception InnerException { get; private set; }
+        public bool Success => ActionResults.Count == 0 || ActionResults.All(a => a.Success);
 
-        public ExecutionResult(bool success, string currentUrl, string currentAction)
+        private readonly List<ActionResult> _actionResults;
+        public IReadOnlyCollection<ActionResult> ActionResults => _actionResults;
+
+        internal ExecutionResult()
         {
-            Success = success;
-            Context = ExecutionContext.GetContext(currentUrl, currentAction);
+            _actionResults = new List<ActionResult>();
         }
 
-        public ExecutionResult(bool success, string currentUrl, string currentAction, string message)
+        internal void AddActionResult(ActionResult actionResult)
         {
-            Success = success;
-            Context = ExecutionContext.GetContext(currentUrl, currentAction);
-            Message = message;
-        }
+            if(actionResult == null)
+            {
+                throw new ArgumentNullException(nameof(actionResult));
+            }
 
-        public ExecutionResult(Exception e, string currentUrl, string currentAction)
-        {
-            InnerException = e;
-            Message = e.Message;
-            Context = ExecutionContext.GetContext(currentUrl, currentAction);
+            _actionResults.Add(actionResult);
         }
     }
 }

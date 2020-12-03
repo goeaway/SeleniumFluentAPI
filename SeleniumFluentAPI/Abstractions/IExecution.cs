@@ -39,21 +39,28 @@ namespace SeleniumScript.Abstractions
         IUtility Utils { get; }
         IWait Wait { get; }
 
-        IExecution Add(Func<IWebDriver, bool> component, string actionName = "Add");
+        /// <summary>
+        /// Add a custom execution action. Use the internal web driver instance to interact with the browser.
+        /// Best used when other methods cannot provide required functionality.
+        /// </summary>
+        /// <param name="component">The action to interact with the browser in, via the web driver</param>
+        /// <param name="actionName">An optional name for this action for easier debugging if a action fails</param>
+        /// <returns></returns>
+        IExecution Custom(Action<IWebDriver> component, string actionName = "Custom");
 
         /// <summary>
         /// Executes each component of the <see cref="Execution"/> in the order they were added.
         /// </summary>
         /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
         /// <returns></returns>
-        IEnumerable<ExecutionResult> Execute(IWebDriverFactory webDriverFactory);
+        ExecutionResult Execute(IWebDriverFactory webDriverFactory);
         /// <summary>
         /// Executes each component of the <see cref="Execution"/> in the order they were added.
         /// </summary>
         /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
         /// <param name="onExecutionStart">An <see cref="Action"/> called after the <see cref="IWebDriver"/> is initialised, but before any execution components are executed</param>
         /// <returns></returns>
-        IEnumerable<ExecutionResult> Execute(
+        ExecutionResult Execute(
             IWebDriverFactory webDriverFactory, 
             Action<IWebDriver> onExecutionStart);
         /// <summary>
@@ -62,7 +69,7 @@ namespace SeleniumScript.Abstractions
         /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
         /// <param name="onActionStart">An <see cref="Action"/> called before each execution component is executed</param>
         /// <returns></returns>
-        IEnumerable<ExecutionResult> Execute(
+        ExecutionResult Execute(
             IWebDriverFactory webDriverFactory, 
             Action<IWebDriver, IExecutionContext> onActionStart);
         /// <summary>
@@ -71,7 +78,7 @@ namespace SeleniumScript.Abstractions
         /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
         /// <param name="onExecutionCompletion">A <see cref="Func{IWebDriver, bool}>"/> called after all execution components are executed, or after an unhandled exception occurs. Return true from the func if the <see cref="IWebDriver"/> should be quit automatically</param>
         /// <returns></returns>
-        IEnumerable<ExecutionResult> Execute(
+        ExecutionResult Execute(
             IWebDriverFactory webDriverFactory, 
             Func<IWebDriver, bool> onExecutionCompletion);
         /// <summary>
@@ -81,7 +88,7 @@ namespace SeleniumScript.Abstractions
         /// <param name="onExecutionStart">An <see cref="Action"/> called after the <see cref="IWebDriver"/> is initialised, but before any execution components are executed</param>
         /// <param name="onExecutionCompletion">A <see cref="Func{IWebDriver, bool}>"/> called after all execution components are executed, or after an unhandled exception occurs. Return true from the func if the <see cref="IWebDriver"/> should be quit automatically</param>
         /// <returns></returns>
-        IEnumerable<ExecutionResult> Execute(
+        ExecutionResult Execute(
             IWebDriverFactory webDriverFactory,
             Action<IWebDriver> onExecutionStart,
             Func<IWebDriver, bool> onExecutionCompletion);
@@ -92,7 +99,7 @@ namespace SeleniumScript.Abstractions
         /// <param name="onExecutionStart">An <see cref="Action"/> called after the <see cref="IWebDriver"/> is initialised, but before any execution components are executed</param>
         /// <param name="onActionStart">An <see cref="Action"/> called before each execution component is executed</param>
         /// <returns></returns>
-        IEnumerable<ExecutionResult> Execute(
+        ExecutionResult Execute(
             IWebDriverFactory webDriverFactory,
             Action<IWebDriver> onExecutionStart,
             Action<IWebDriver, IExecutionContext> onActionStart);
@@ -103,7 +110,7 @@ namespace SeleniumScript.Abstractions
         /// <param name="onActionStart">An <see cref="Action"/> called before each execution component is executed</param>
         /// <param name="onExecutionCompletion">A <see cref="Func{IWebDriver, bool}>"/> called after all execution components are executed, or after an unhandled exception occurs. Return true from the func if the <see cref="IWebDriver"/> should be quit automatically</param>
         /// <returns></returns>
-        IEnumerable<ExecutionResult> Execute(
+        ExecutionResult Execute(
             IWebDriverFactory webDriverFactory, 
             Action<IWebDriver, IExecutionContext> onActionStart, 
             Func<IWebDriver, bool> onExecutionCompletion);
@@ -115,7 +122,7 @@ namespace SeleniumScript.Abstractions
         /// <param name="onActionStart">An <see cref="Action"/> called before each execution component is executed</param>
         /// <param name="onExecutionCompletion">A <see cref="Func{IWebDriver, bool}>"/> called after all execution components are executed, or after an unhandled exception occurs. Return true from the func if the <see cref="IWebDriver"/> should be quit automatically</param>
         /// <returns></returns>
-        IEnumerable<ExecutionResult> Execute(
+        ExecutionResult Execute(
             IWebDriverFactory webDriverFactory, 
             Action<IWebDriver> onExecutionStart, 
             Action<IWebDriver, IExecutionContext> onActionStart, 

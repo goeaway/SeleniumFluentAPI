@@ -16,16 +16,14 @@ namespace SeleniumScript.Components
     {
         private readonly IExecution _execution;
         private readonly List<UtilityAction> _waits;
-        private readonly bool _throwOnException;
         private readonly int _retryCount;
-        private readonly TimeSpan _retryWaitPeriod;
+        private readonly ICollection<TimeSpan> _retryWaitPeriods;
 
-        public Wait(IExecution execution, int retryCount, TimeSpan retryWaitPeriod, bool throwOnException)
+        public Wait(IExecution execution, int retryCount, ICollection<TimeSpan> retryWaitPeriods)
         {
             _execution = execution;
-            _throwOnException = throwOnException;
             _retryCount = retryCount;
-            _retryWaitPeriod = retryWaitPeriod;
+            _retryWaitPeriods = retryWaitPeriods;
             _waits = new List<UtilityAction>();
         }
 
@@ -33,24 +31,16 @@ namespace SeleniumScript.Components
         {
             _waits.Add(new UtilityAction(actionName, driver =>
             {
-                try
-                {
-                    return Policy
-                        .Handle<WebDriverException>()
-                        .Or<LocatorFindException>()
-                        .WaitAndRetry(_retryCount, (tryNum) => _retryWaitPeriod)
-                        .Execute(() =>
-                        {
-                            return action(driver);
-                        });
-                }
-                catch (Exception e)
-                {
-                    if (_throwOnException)
-                        throw new WaitFailureException(e);
-
-                    return false;
-                }
+                return Policy
+                    .Handle<WebDriverException>()
+                    .Or<LocatorFindException>()
+                    .WaitAndRetry(
+                        _retryCount, 
+                        (tryNum) => RetryWaitCalculator.GetTimeSpanForWait(tryNum, _retryWaitPeriods))
+                    .Execute(() =>
+                    {
+                       return action(driver);
+                    });
             }));
         }
 
@@ -67,7 +57,12 @@ namespace SeleniumScript.Components
             {
                 foreach (var wait in _waits)
                 {
-                    _execution.Add(wait.Action, wait.Name);
+                    _execution.Custom(driver =>
+                    {
+                        var result = wait.Action(driver);
+
+
+                    }, wait.Name);
                 }
 
                 return _execution;
