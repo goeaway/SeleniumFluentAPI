@@ -14,85 +14,32 @@ namespace SeleniumScript.Abstractions
     /// </summary>
     public interface IExecution
     {
-        /// <summary>
-        /// Sets how many times a failure to interact with the <see cref="IWebDriver"/> and or an <see cref="IWebElement"/> should be retried before throwing an <see cref="ExecutionFailureException"/>
-        /// </summary>
-        /// <param name="count">The number of times to retry an interaction</param>
-        /// <param name="intervalWaitPeriod">The time period, represented by a <see cref="TimeSpan"/>, between each try</param>
-        /// <returns></returns>
-        IExecution RetryCount(int count, TimeSpan intervalWaitPeriod);
-        /// <summary>
-        /// Sets if an exception should be thrown if an <see cref="IAssertion"/> fails
-        /// </summary>
-        /// <param name="throwException"></param>
-        /// <returns></returns>
-        IExecution ExceptionOnAssertionFailure(bool throwException);
-        /// <summary>
-        /// Sets if an exception should be thrown if an <see cref="IWait"/> fails
-        /// </summary>
-        /// <param name="throwException"></param>
-        /// <returns></returns>
-        IExecution ExceptionOnWaitFailure(bool throwException);
-        /// <summary>
-        /// Sets if an exception should be thrown if an <see cref="IExecution"/> fails
-        /// </summary>
-        /// <param name="throwException"></param>
-        /// <returns></returns>
-        IExecution ExceptionOnExecutionFailure(bool throwException);
-        /// <summary>
-        /// Sets if an element's background should be highlighted when it's clicked on. Useful for element locator debugging purposes
-        /// </summary>
-        /// <param name="highlight"></param>
-        /// <returns></returns>
-        IExecution HighlightElementOnClick(bool highlight);
+        IExecution Refresh(string actionName = "Refresh");
 
-        IExecution Refresh();
-        IExecution Refresh(string actionName);
+        IExecution NavigateTo(Uri uri, string actionName = "NavigateTo");
 
-        IExecution NavigateTo(Uri uri);
-        IExecution NavigateTo(Uri uri, string actionName);
-        IExecution NavigateTo(Uri uri, IDictionary<string, string> queryStringParameters);
-        IExecution NavigateTo(Uri uri, IDictionary<string, string> queryStringParameters, string actionName);
-        IExecution NavigateTo(Uri uri, IEnumerable<string> urlParameters);
-        IExecution NavigateTo(Uri uri, IEnumerable<string> urlParameters, string actionName);
+        IExecution Click(Locator locator, string actionName = "Click");
 
-        IExecution Click(Locator locator);
-        IExecution Click(Locator locator, string actionName);
+        IExecution Input(Locator locator, string textToInput, string actionName = "Input");
 
-        IExecution Input(Locator locator, string textToInput);
-        IExecution Input(Locator locator, string textToInput, string actionName);
+        IExecution Select(Locator locator, int index, string actionName = "Select");
+        IExecution Select(Locator locator, string value, SelectionType selectionType, string actionName = "Select");
 
-        IExecution Select(Locator locator, int index);
-        IExecution Select(Locator locator, int index, string actionName);
-        IExecution Select(Locator locator, string value, SelectionType selectionType);
-        IExecution Select(Locator locator, string value, SelectionType selectionType, string actionName);
+        IExecution ScrollTo(Locator locator, string actionName = "ScrollTo");
+        IExecution Scroll(int pixels, bool up, string actionName = "Scroll");
 
-        IExecution ScrollTo(Locator locator);
-        IExecution ScrollTo(Locator locator, string actionName);
-        IExecution Scroll(int pixels, bool up);
-        IExecution Scroll(int pixels, bool up, string actionName);
+        IExecution MoveMouseTo(Locator locator, string actionName = "MoveMouseTo");
+        IExecution MoveMouseTo(int x, int y, string actionName = "MoveMouseTo");
 
-        IExecution MoveMouseTo(Locator locator);
-        IExecution MoveMouseTo(Locator locator, string actionName);
-        IExecution MoveMouseTo(Locator locator, int pixelOffset, PixelOffsetDirection direction);
-        IExecution MoveMouseTo(Locator locator, int pixelOffset, PixelOffsetDirection direction, string actionName);
-        IExecution MoveMouseTo(int x, int y);
-        IExecution MoveMouseTo(int x, int y, string actionName);
+        IExecution ClickAndHold(Locator locator, string actionName = "ClickAndHold");
 
-        IExecution ClickAndHold(Locator locator);
-        IExecution ClickAndHold(Locator locator, string actionName);
-
-        IExecution ReleaseClick();
-        IExecution ReleaseClick(string actionName);
+        IExecution ReleaseClick(string actionName = "ReleaseClick");
 
         IAssertion Expect { get; }
         IUtility Utils { get; }
         IWait Wait { get; }
 
-        IExecution Add(Func<IWebDriver, bool> component);
-        IExecution Add(Func<IWebDriver, bool> component, string actionName);
-
-        IExecution Complete();
+        IExecution Add(Func<IWebDriver, bool> component, string actionName = "Add");
 
         /// <summary>
         /// Executes each component of the <see cref="Execution"/> in the order they were added.
