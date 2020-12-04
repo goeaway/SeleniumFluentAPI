@@ -26,16 +26,16 @@ public void MySeleniumScriptTest()
     // create a new execution here
     // adding new actions with each method or property call
     var result = new Execution(options)
-        .NavigateTo(new Uri("https://www.bbc.co.uk/")) // navigates the browser to the specified URL
-        .Wait // some actions are grouped together, we can access methods to wait for things by using the .Wait property
+        .NavigateTo(new Uri("https://www.bbc.co.uk/"))  // navigates the browser to the specified URL
+        .Wait                                           // some actions are grouped together, we can access methods to wait for things by using the .Wait property
             .ForElementTo(
-                Locator.From(By.XPath("//*[text() = 'Welcome to the BBC']")), // define which element you want to wait for
-                element => element.Displayed, // define how to wait for it, here we're waiting until the element is displayed
-                TimeSpan.FromSeconds(5), // provide a timeout for the execution to give up waiting (will stop execution)
-                "Wait for title to show" // It's best to provide unique names to each action you make, this makes it easier to see which actions have failed, if any
+                Locator.From(By.XPath("//*[text() = 'Welcome to the BBC']")),   // define which element you want to wait for
+                element => element.Displayed,                                   // define how to wait for it, here we're waiting until the element is displayed
+                TimeSpan.FromSeconds(5),                                        // provide a timeout for the execution to give up waiting (will stop execution)
+                "Wait for title to show"                                        // It's best to provide unique names to each action you make, this makes it easier to see which actions have failed, if any
             )
-        .Then // return back to the main Execution object for more options
-        .Expect // .Expect property is used to assert things
+        .Then                                           // return back to the main Execution object for more options
+        .Expect                                         // .Expect property is used to assert things
             .ToBe(driver => driver.Url == "https://www.bbc.co.uk/", "Expect to be on the bbc home page") // here we are expecting the browser to be on a certain page
         .Then
         .Execute(); // call this to finally execute the test, don't forget to call this!
