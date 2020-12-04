@@ -12,6 +12,8 @@ namespace SeleniumScript.Abstractions
         IUtility SetWindowMaximised();
         IUtility SetWindowMinimised();
         IUtility SetWindowDimensions(int width, int height);
+        IUtility CreateNewTab();
+        IUtility CloseTab(int tabIndex);
 
     }
 }

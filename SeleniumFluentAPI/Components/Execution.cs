@@ -22,15 +22,14 @@ namespace SeleniumScript.Components
         private readonly List<ExecutionAction> _actions;
         private readonly ExecutionOptions _executionOptions;
 
-        public Execution() : this (new ExecutionOptions()) { }
-
         /// <summary>
         /// Initialises a new <see cref="Execution"/> instance
+        /// <param name="options">Provide options for the execution</param>
         /// </summary>
         public Execution(ExecutionOptions options)
         {
+            _executionOptions = options ?? throw new ArgumentNullException(nameof(options));
             _actions = new List<ExecutionAction>();
-            _executionOptions = options;
         }
 
         public IAssertion Expect => new Assertion(this, _executionOptions.ActionRetries, _executionOptions.ActionRetryWaitPeriods);
@@ -143,6 +142,15 @@ namespace SeleniumScript.Components
             }, actionName);
         }
 
+        public IExecution SwitchToTab(int tabIndex, string actionName = "Switch To Tab")
+        {
+            return InnerAddWithPolicy(driver =>
+            {
+                var tab = driver.WindowHandles[tabIndex];
+                driver.SwitchTo().Window(tab);
+            }, actionName);
+        }
+
         public IExecution Custom(Action<IWebDriver> component, string actionName = "Custom")
         {
             return InnerAdd(driver => component(driver), actionName);
@@ -206,56 +214,29 @@ namespace SeleniumScript.Components
             }, actionName);
         }
 
-        /// <summary>
-        /// Executes each component of the <see cref="Execution"/> in the order they were added.
-        /// </summary>
-        /// <param name="webDriverFactory">A <see cref="IWebDriverFactory"/> to create an <see cref="IWebDriver"/></param>
-        /// <returns></returns>
-        public ExecutionResult Execute(IWebDriverFactory webDriverFactory)
-            => Execute(webDriverFactory, driver => { }, (driver, context) => { }, driver => true);
-        
-        public ExecutionResult Execute(IWebDriverFactory webDriverFactory,
-            Action<IWebDriver> onExecutionStart)
-            => Execute(webDriverFactory, onExecutionStart, (driver, context) => { }, driver => true);
-        
-        public ExecutionResult Execute(IWebDriverFactory webDriverFactory,
-            Action<IWebDriver, IExecutionContext> onActionStart)
-            => Execute(webDriverFactory, driver => { }, onActionStart, driver => true);
-        
-        public ExecutionResult Execute(IWebDriverFactory webDriverFactory, 
-            Func<IWebDriver, bool> onExecutionCompletion)
-            => Execute(webDriverFactory, driver => { }, (driver, context) => { }, onExecutionCompletion);
-        
-        public ExecutionResult Execute(IWebDriverFactory webDriverFactory,
-            Action<IWebDriver> onExecutionStart,
-            Func<IWebDriver, bool> onExecutionCompletion)
-            => Execute(webDriverFactory, onExecutionStart, (driver, context) => { }, onExecutionCompletion);
-        
-        public ExecutionResult Execute(IWebDriverFactory webDriverFactory,
-            Action<IWebDriver, IExecutionContext> onActionStart,
-            Func<IWebDriver, bool> onExecutionCompletion)
-            => Execute(webDriverFactory, driver => { }, onActionStart, onExecutionCompletion);
-        
-        public ExecutionResult Execute(IWebDriverFactory webDriverFactory,
-            Action<IWebDriver> onExecutionStart,
-            Action<IWebDriver, IExecutionContext> onActionStart)
-            => Execute(webDriverFactory, onExecutionStart, onActionStart, driver => true);
-        
-        public ExecutionResult Execute(IWebDriverFactory webDriverFactory,
-            Action<IWebDriver> onExecutionStart,
-            Action<IWebDriver, IExecutionContext> onActionStart, 
-            Func<IWebDriver, bool> onExecutionCompletion)
+        public ExecutionResult Execute()
         {
             var exResult = new ExecutionResult();
 
-            var driver = webDriverFactory.CreateWebDriver();
-            onExecutionStart(driver);
+            var driver =
+                _executionOptions.WebDriverFactory != null
+                ? _executionOptions.WebDriverFactory.CreateWebDriver()
+                : _executionOptions.WebDriver 
+                    ?? throw new InvalidOperationException("A web driver or web driver factory is required");
+
+            _executionOptions.OnExecutionStart?.Invoke(driver);
 
             try
             {
                 foreach (var action in _actions)
                 {
-                    onActionStart(driver, new ExecutionContext() { Url = driver.Url, ActionName = action.Name });
+                    _executionOptions.OnActionStart?.Invoke(
+                        driver,
+                        new ExecutionContext()
+                        {
+                            Url = driver.Url,
+                            ActionName = action.Name
+                        });
 
                     try
                     {
@@ -283,9 +264,11 @@ namespace SeleniumScript.Components
             }
             finally
             {
-                if(onExecutionCompletion(driver))
+                var shouldDispose = _executionOptions.OnExecutionCompletion?.Invoke(driver);
+
+                if(!shouldDispose.HasValue || shouldDispose.Value)
                 {
-                    DriverQuitter.Quit(driver);
+                   DriverQuitter.Quit(driver);
                 }
             }
         }

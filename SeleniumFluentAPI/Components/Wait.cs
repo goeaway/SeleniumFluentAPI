@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using OpenQA.Selenium;
@@ -27,7 +28,7 @@ namespace SeleniumScript.Components
             _waits = new List<UtilityAction>();
         }
 
-        private void InnerAddWithPolicy(Func<IWebDriver, bool> action, string actionName)
+        private IWait InnerAddWithPolicy(Func<IWebDriver, bool> action, string actionName)
         {
             _waits.Add(new UtilityAction(actionName, driver =>
             {
@@ -42,13 +43,43 @@ namespace SeleniumScript.Components
                        return action(driver);
                     });
             }));
+            return this;
         }
 
         public IWait For(Func<IWebDriver, bool> predicate, TimeSpan timeout, string actionName = "For")
         {
-            InnerAddWithPolicy(driver => new WebDriverWait(driver, timeout).Until(predicate), actionName);
+            return InnerAddWithPolicy(driver => new WebDriverWait(driver, timeout).Until(predicate), actionName);
+        }
 
-            return this;
+        public IWait ForElementTo(Locator elementLocator, Func<IWebElement, bool> predicate, TimeSpan timeout, string actionName = "For Element To")
+        {
+            return InnerAddWithPolicy(driver =>
+            {
+                var predicatePassed = false;
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                while(!predicatePassed)
+                {
+                    Exception lastException = null;
+                    try
+                    {
+                        var element = elementLocator.FindElement(driver);
+                        predicatePassed = predicate(element);
+                    }
+                    catch (Exception e)
+                    {
+                        // ignore the error, but place it in var to be used if timeout occurs
+                        lastException = e;
+                    }
+
+                    if(stopwatch.ElapsedMilliseconds >= timeout.TotalMilliseconds)
+                    {
+                        throw new WaitFailureException("Wait timeout was reached", lastException);
+                    }
+                }
+                // if we got here we're golden
+                return true;
+            }, actionName);
         }
 
         public IExecution Then

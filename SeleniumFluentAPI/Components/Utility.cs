@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using SeleniumScript.Abstractions;
 using SeleniumScript.Enums;
+using SeleniumScript.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -26,12 +27,13 @@ namespace SeleniumScript.Components
             }
         }
 
-        private void InnerAdd(Func<IWebDriver, bool> action, string actionName)
+        private IUtility InnerAdd(Func<IWebDriver, bool> action, string actionName)
         {
             _actions.Add(new UtilityAction(actionName, driver =>
             {
                 return action(driver);
             }));
+            return this;
         }
 
         public Utility(IExecution execution)
@@ -42,14 +44,12 @@ namespace SeleniumScript.Components
 
         public IUtility SetCookie(string cookieName, string value)
         {
-            InnerAdd(driver =>
+            return InnerAdd(driver =>
             {
                 driver.Manage().Cookies.AddCookie(new Cookie(cookieName, value));
 
                 return true;
             }, "Set Cookie");
-
-            return this;
         }
 
         public IUtility SetWindowDimensions(int width, int height)
@@ -59,35 +59,55 @@ namespace SeleniumScript.Components
             if (height < 1)
                 throw new ArgumentOutOfRangeException(nameof(height));
 
-            InnerAdd(driver =>
+            return InnerAdd(driver =>
             {
                 driver.Manage().Window.Size = new Size(width, height);
                 return true;
             }, "Set Dimensions");
-
-            return this;
         }
 
         public IUtility SetWindowMaximised()
         {
-            InnerAdd(driver =>
+            return InnerAdd(driver =>
             {
                 driver.Manage().Window.Maximize();
                 return true;
             }, "Maximise");
-
-            return this;
         }
 
         public IUtility SetWindowMinimised()
         {
-            InnerAdd(driver =>
+            return InnerAdd(driver =>
             {
                 driver.Manage().Window.Minimize();
                 return true;
             }, "Minimise");
+        }
 
-            return this;
+        public IUtility CreateNewTab()
+        {
+            return InnerAdd(driver =>
+            {
+                ((IJavaScriptExecutor)driver).ExecuteScript("window.open();");
+                return true;
+            }, "Create New Tab");
+        }
+
+        public IUtility CloseTab(int tabIndex)
+        {
+            return InnerAdd(driver =>
+            {
+                if(driver.WindowHandles.Count == 1)
+                {
+                    throw new UtilityException("Cannot close the last tab");
+                }
+
+                var tab = driver.WindowHandles[tabIndex];
+                driver.SwitchTo().Window(tab);
+                driver.Close();
+                driver.SwitchTo().Window(driver.WindowHandles[0]);
+                return true;
+            }, "Close Tab");
         }
     }
 }

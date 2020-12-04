@@ -10,5 +10,6 @@ namespace SeleniumScript.Abstractions
     {
         IExecution Then { get; }
         IWait For(Func<IWebDriver, bool> predicate, TimeSpan timeout, string actionName = "For");
+        IWait ForElementTo(Locator elementLocator, Func<IWebElement, bool> predicate, TimeSpan timeout, string actionName = "For Element To");
     }
 }

@@ -16,6 +16,9 @@ using InternetExplorerOptions = OpenQA.Selenium.IE.InternetExplorerOptions;
 
 namespace SeleniumScript.Utilities
 {
+    /// <summary>
+    /// Provides functionality to create an <see cref="IWebDriver"/> based on provided browser options
+    /// </summary>
     public class ManagedWebDriverFactory : IWebDriverFactory
     {
         private readonly Browser _browser;
@@ -23,7 +26,34 @@ namespace SeleniumScript.Utilities
         private readonly IDictionary<Browser, IDriverConfig> _configs;
         private readonly IDictionary<Browser, DriverOptions> _options; 
 
-        public ManagedWebDriverFactory(Browser browser)
+        /// <summary>
+        /// Initialise a <see cref="ManagedWebDriverFactory"/> with default options. Uses the latest version of the Chrome browser web driver
+        /// </summary>
+        public ManagedWebDriverFactory() : this (Browser.Chrome) { }
+        /// <summary>
+        /// Initialise a <see cref="ManagedWebDriverFactory"/> with a specified <see cref="Browser"/>
+        /// </summary>
+        /// <param name="browser">The browser to use</param>
+        public ManagedWebDriverFactory(Browser browser) : this (browser, null, null) { }
+        /// <summary>
+        /// Initialise a <see cref="ManagedWebDriverFactory"/> with a specified <see cref="Browser"/> and <see cref="DriverOptions"/> for that browser
+        /// </summary>
+        /// <param name="browser">The browser to use</param>
+        /// <param name="options">The options for the browser. You should provide a derived version of <see cref="DriverOptions"/> for the browser you want to use, e.g. <see cref="ChromeOptions"/></param>
+        public ManagedWebDriverFactory(Browser browser, DriverOptions options) : this(browser, options, null) { }
+        /// <summary>
+        /// Initialise a <see cref="ManagedWebDriverFactory"/> with a specified <see cref="Browser"/> and <see cref="IDriverConfig"/> for that browser
+        /// </summary>
+        /// <param name="browser">The browser to use</param>
+        /// <param name="config">The config for the web driver. You should provide an implementation of <see cref="IDriverConfig"/> for the browser you want to use, e.g. <see cref="ChromeConfig"/></param>
+        public ManagedWebDriverFactory(Browser browser, IDriverConfig config) : this (browser,  null, config) { }
+        /// <summary>
+        /// Initialise a <see cref="ManagedWebDriverFactory"/> with a specified <see cref="Browser"/>, <see cref="DriverOptions"/> and <see cref="IDriverConfig"/> for that browser
+        /// </summary>
+        /// <param name="browser">The browser to use</param>
+        /// <param name="options">The options for the browser. You should provide a derived version of <see cref="DriverOptions"/> for the browser you want to use, e.g. <see cref="ChromeOptions"/></param>
+        /// <param name="config">The config for the web driver. You should provide an implementation of <see cref="IDriverConfig"/> for the browser you want to use, e.g. <see cref="ChromeConfig"/></param>
+        public ManagedWebDriverFactory(Browser browser, DriverOptions options, IDriverConfig config)
         {
             _browser = browser;
             _manager = new DriverManager();
@@ -43,34 +73,30 @@ namespace SeleniumScript.Utilities
                 { Browser.IE, new InternetExplorerOptions() },
                 { Browser.Edge, new EdgeOptions() }
             };
-        }
 
-        public ManagedWebDriverFactory SetConfig(Browser browser, IDriverConfig config)
-        {
-            try
+            if(config != null)
             {
-                _configs[browser] = config;
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new NotSupportedException(browser.ToString());
-            }
-
-            return this;
-        }
-
-        public ManagedWebDriverFactory SetDriverOptions(Browser browser, DriverOptions options)
-        {
-            try
-            {
-                _options[browser] = options;
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new NotSupportedException(browser.ToString());
+                try
+                {
+                    _configs[browser] = config;
+                }
+                catch (KeyNotFoundException)
+                {
+                    throw new NotSupportedException(browser.ToString());
+                }
             }
 
-            return this;
+            if(options != null)
+            {
+                try
+                {
+                    _options[browser] = options;
+                }
+                catch (KeyNotFoundException)
+                {
+                    throw new NotSupportedException(browser.ToString());
+                }
+            }
         }
 
         public IWebDriver CreateWebDriver()
