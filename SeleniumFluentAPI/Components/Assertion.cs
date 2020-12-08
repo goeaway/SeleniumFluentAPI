@@ -36,7 +36,7 @@ namespace SeleniumScript.Components
             _assertionsToBeInverted = new List<int>();
         }
 
-        private void InnerAddWithPolicy(Func<IWebDriver, bool> func, string actionName)
+        private IAssertion InnerAddWithPolicy(Func<IWebDriver, bool> func, string actionName)
         {
             _assertions.Add(new UtilityAction(actionName, driver => Policy
                     .Handle<WebDriverException>()
@@ -45,12 +45,21 @@ namespace SeleniumScript.Components
                         _actionRetryCount, 
                         (tryNum) => RetryWaitCalculator.GetTimeSpanForWait(tryNum, _actionRetryWaitPeriods))
                     .Execute(() => func(driver))));
+            return this;
         }
 
         public IAssertion ToBe(Func<IWebDriver, bool> predicate, string actionName = "ToBe")
         {
-            InnerAddWithPolicy(predicate, actionName);
-            return this;
+            return InnerAddWithPolicy(predicate, actionName);
+        }
+
+        public IAssertion ElementToBe(Locator locator, Func<IWebElement, bool> predicate, string actionName = "ElementToBe")
+        {
+            return InnerAddWithPolicy(driver =>
+            {
+                var element = locator.FindElement(driver);
+                return predicate(element);
+            }, actionName);
         }
 
         public IExecution Then

@@ -14,6 +14,7 @@ namespace SeleniumScript.Abstractions
     public interface IAssertion
     {
         IAssertion ToBe(Func<IWebDriver, bool> predicate, string actionName = "ToBe");
+        IAssertion ElementToBe(Locator locator, Func<IWebElement, bool> predicate, string actionName = "Element To Be");
         
         /// <summary>
         /// Inverts the succeeding assertion
