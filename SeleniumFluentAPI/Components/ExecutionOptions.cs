@@ -17,11 +17,12 @@ namespace SeleniumScript.Components
         {
             WebDriver = webDriver ?? throw new ArgumentNullException(nameof(webDriver));
         }
-
         /// <summary>
-        /// Gets or sets if elements that are clicked should be highlighted in the browser for a period of time
+        /// Gets or sets if the execution should run in debug mode. In debug mode elements that
+        /// the web driver interacts with are highlighted and the execution waits for a few seconds
+        /// after a failed execution action
         /// </summary>
-        public bool HighlightElementOnClick { get; set; }
+        public bool Debug { get; set; }
         /// <summary>
         /// Gets or sets how many times an execution should be retried before being considered a failure
         /// </summary>

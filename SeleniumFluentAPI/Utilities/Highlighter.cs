@@ -30,25 +30,24 @@ namespace SeleniumScript.Utilities
         public static void Highlight(IWebDriver driver, IWebElement element, Color color)
         {
             var colorStr = ConvertColorToRGBAString(color);
-            // get the existing value first so we can set it back after a period of time
-            var existingValue = element.GetCssValue("background");
-            // set the background to the color value
-            driver.ExecuteJavaScript<string>($"arguments[0].style.background='{colorStr}'", element);
 
-            // create a task that'll return the element's background to the original after a period of time
-            Task.Run(() =>
+            try
             {
-                try
+                // get the existing value first so we can set it back after a period of time
+                var existingValue = element.GetCssValue("background");
+                // set the background to the color value
+                driver.ExecuteJavaScript<string>($"arguments[0].style.background='{colorStr}'", element);
+
+                // create a task that'll return the element's background to the original after a period of time
+                Task.Run(() =>
                 {
-                    // disgraceful but whatever
-                    Thread.Sleep(HIGHLIGHT_MILLISECONDS);
-                    driver.ExecuteJavaScript<string>($"arguments[0].style.background='{existingValue}'", element);
-                }
-                catch (WebDriverException)
-                {
-                    // catch web driver exceptions, in case the element does not exist anymore or something (we don't care)
-                }
-            });
+                     driver.ExecuteJavaScript<string>($"arguments[0].style.background='{existingValue}'", element);
+                });
+            }
+            catch (WebDriverException)
+            {
+
+            }
         }
     }
 }

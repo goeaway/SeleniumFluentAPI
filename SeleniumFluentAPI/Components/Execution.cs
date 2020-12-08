@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.Extensions;
@@ -83,7 +84,7 @@ namespace SeleniumScript.Components
                 var element = locator.FindElement(driver);
                 element.Click();
 
-                if(_executionOptions.HighlightElementOnClick)
+                if(_executionOptions.Debug)
                 {
                     Highlighter.Highlight(driver, element, Color.Yellow);
                 }
@@ -95,6 +96,11 @@ namespace SeleniumScript.Components
             {
                 var element = locator.FindElement(driver);
                 element.SendKeys(textToInput);
+
+                if (_executionOptions.Debug)
+                {
+                    Highlighter.Highlight(driver, element, Color.Yellow);
+                }
             }, actionName);
         }
         public IExecution Select(Locator locator, int index, string actionName = "Select")
@@ -105,6 +111,11 @@ namespace SeleniumScript.Components
                 var select = new SelectElement(element);
 
                 select.SelectByIndex(index);
+
+                if (_executionOptions.Debug)
+                {
+                    Highlighter.Highlight(driver, element, Color.Yellow);
+                }
             }, actionName);
         }
         public IExecution Select(Locator locator, string value, SelectionType selectionType, string actionName = "Select")
@@ -124,6 +135,11 @@ namespace SeleniumScript.Components
                         break;
                     default:
                         throw new NotSupportedException(selectionType.ToString());
+                }
+
+                if (_executionOptions.Debug)
+                {
+                    Highlighter.Highlight(driver, element, Color.Yellow);
                 }
             }, actionName);
         }
@@ -161,6 +177,10 @@ namespace SeleniumScript.Components
             {
                 var element = locator.FindElement(driver);
                 driver.ExecuteJavaScript<string>("arguments[0].scrollIntoView(true);", element);
+                if (_executionOptions.Debug)
+                {
+                    Highlighter.Highlight(driver, element, Color.Yellow);
+                }
             }, actionName);
         }
         public IExecution Scroll(int pixels, bool up, string actionName = "Scroll")
@@ -183,6 +203,11 @@ namespace SeleniumScript.Components
                 var actions = new Actions(driver);
                 actions.MoveToElement(element);
                 actions.Perform();
+
+                if (_executionOptions.Debug)
+                {
+                    Highlighter.Highlight(driver, element, Color.Yellow);
+                }
             }, actionName);
         }
         public IExecution MoveMouseTo(int x, int y, string actionName = "MoveMouseTo")
@@ -202,6 +227,10 @@ namespace SeleniumScript.Components
                 var actions = new Actions(driver);
                 actions.ClickAndHold(element);
                 actions.Perform();
+                if (_executionOptions.Debug)
+                {
+                    Highlighter.Highlight(driver, element, Color.Yellow);
+                }
             }, actionName);
         }
         public IExecution ReleaseClick(string actionName = "ReleaseClick")
@@ -245,6 +274,10 @@ namespace SeleniumScript.Components
                     }
                     catch (Exception e)
                     {
+                        if(_executionOptions.Debug)
+                        {
+                            Thread.Sleep(10);
+                        }
                         // capture and store exception in result, break and return to user
                         // no more executions after this exception occurs will happen
                         exResult.AddActionResult(new ActionResult
